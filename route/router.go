@@ -1,7 +1,7 @@
 package route
 
 import (
-	jwt "github.com/akhettar/gin-jwt-cognito"
+	cognito "github.com/akhettar/gin-jwt-cognito"
 	"github.com/gin-gonic/gin"
 	"github.com/sho-ts/place-api/controller"
 	"os"
@@ -10,7 +10,7 @@ import (
 func GetRouter() *gin.Engine {
 	router := gin.Default()
 
-	mw, err := jwt.AuthJWTMiddleware(os.Getenv("AWS_COGNITO_ISS"), os.Getenv("AWS_COGNITO_USER_POOL_ID"), os.Getenv("AWS_COGNITO_REGION"))
+	mw, err := cognito.AuthJWTMiddleware(os.Getenv("AWS_COGNITO_ISS"), os.Getenv("AWS_COGNITO_USER_POOL_ID"), os.Getenv("AWS_COGNITO_REGION"))
 
 	if err != nil {
 		panic(err)
