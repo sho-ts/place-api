@@ -6,6 +6,7 @@ type User struct {
 	DisplayId string
 	Name      string
 	Avatar    string
+	Comment   Comment `gorm:"foreignkey:UserId"`
 	Post      Post    `gorm:"foreignkey:UserId"`
 	Storage   Storage `gorm:"foreignkey:UserId"`
 }
