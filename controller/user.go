@@ -17,7 +17,13 @@ func CreateUser(c *gin.Context) {
 
 	c.ShouldBindJSON(&requestBody)
 
-	user := service.CreateUser(requestBody.AuthId, requestBody.DisplayId, requestBody.Name)
+	user, err := service.CreateUser(requestBody.AuthId, requestBody.DisplayId, requestBody.Name)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "ユーザーの作成に失敗しました",
+		})
+	}
 
 	c.JSON(200, user)
 }

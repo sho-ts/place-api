@@ -5,7 +5,7 @@ import (
 	"github.com/sho-ts/place-api/entity"
 )
 
-func CreateUser(authId string, displayId string, name string) entity.User {
+func CreateUser(authId string, displayId string, name string) (entity.User, error) {
 	user := entity.User{
 		Id:        authId,
 		DisplayId: displayId,
@@ -14,11 +14,7 @@ func CreateUser(authId string, displayId string, name string) entity.User {
 
 	result := database.DB.Create(&user)
 
-	if result.Error != nil {
-		panic("何かがおかしい")
-	}
-
-	return user
+	return user, result.Error
 }
 
 func GetMe(authId string) (entity.User, error) {
