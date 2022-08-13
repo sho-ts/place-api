@@ -25,12 +25,27 @@ func GetMe(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-	user := service.GetMe(claims["sub"].(string))
+	user, err := service.GetMe(claims["sub"].(string))
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "ユーザーが見つかりませんでした",
+		})
+		return
+	}
 
 	c.JSON(200, user)
 }
 
 func GetUser(c *gin.Context) {
-	user := service.GetUser(c.Param("userId"))
+	user, err := service.GetUser(c.Param("userId"))
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "ユーザーが見つかりませんでした",
+		})
+		return
+	}
+
 	c.JSON(200, user)
 }

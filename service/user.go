@@ -21,18 +21,18 @@ func CreateUser(authId string, displayId string, name string) entity.User {
 	return user
 }
 
-func GetMe(authId string) entity.User {
+func GetMe(authId string) (entity.User, error) {
 	var user entity.User
 
-	database.DB.Where("id = ?", authId).First(&user)
+	result := database.DB.Where("id = ?", authId).First(&user)
 
-	return user
+	return user, result.Error
 }
 
-func GetUser(userId string) entity.User {
-  var user entity.User
+func GetUser(userId string) (entity.User, error) {
+	var user entity.User
 
-  database.DB.Where("display_id = ?", userId).First(&user)
+	result := database.DB.Where("display_id = ?", userId).First(&user)
 
-  return user
+	return user, result.Error
 }
