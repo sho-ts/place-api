@@ -25,6 +25,7 @@ func UploadToS3Bucket(file multipart.File, name string) (string, error) {
 		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET_NAME")),
 		Body:   aws.ReadSeekCloser(file),
 		Key:    aws.String(util.GetULID() + name),
+		ACL:    aws.String("public-read"),
 	})
 
 	return output.Location, err
