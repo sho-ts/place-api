@@ -27,10 +27,24 @@ func CreatePost(c *gin.Context) {
 	postId := util.GetULID()
 	authId := claims["sub"].(string)
 
-	service.CreatePost(postId, authId, requestBody.Caption)
-	service.CreateStorage(postId, authId, path)
+	msg := "投稿に失敗しました"
+	_, err = service.CreatePost(postId, authId, requestBody.Caption)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": msg,
+		})
+	}
+
+	_, err = service.CreateStorage(postId, authId, path)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": msg,
+		})
+	}
 
 	c.JSON(200, gin.H{
-		"message": "hello",
+		"message": "success",
 	})
 }
