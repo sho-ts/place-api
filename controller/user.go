@@ -23,6 +23,7 @@ func CreateUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "ユーザーの作成に失敗しました",
 		})
+		return
 	}
 
 	c.JSON(200, user)
