@@ -22,3 +22,11 @@ func CreateUser(authId string, displayId string, name string) entity.User {
 
 	return user
 }
+
+func GetMe(authId string) entity.User {
+	var user entity.User
+
+	database.DB.Where("auth_id = ?", authId).First(&user)
+
+	return user
+}
