@@ -1,13 +1,16 @@
 package service
 
 import (
+	"mime/multipart"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/sho-ts/place-api/database"
+	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
-	"mime/multipart"
-	"os"
 )
 
 func UploadToS3Bucket(file multipart.File, name string) (string, error) {
@@ -25,4 +28,17 @@ func UploadToS3Bucket(file multipart.File, name string) (string, error) {
 	})
 
 	return output.Location, err
+}
+
+func CreateStorage(postId string, authId string, path string) (entity.Storage, error) {
+	storage := entity.Storage{
+		Id:     util.GetULID(),
+		UserId: authId,
+		PostId: postId,
+		Url:    path,
+	}
+
+	result := database.DB.Create(&storage)
+
+	return storage, result.Error
 }
