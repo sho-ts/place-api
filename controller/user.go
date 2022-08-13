@@ -29,3 +29,8 @@ func GetMe(c *gin.Context) {
 
 	c.JSON(200, user)
 }
+
+func GetUser(c *gin.Context) {
+	user := service.GetUser(c.Param("userId"))
+	c.JSON(200, user)
+}

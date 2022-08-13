@@ -28,3 +28,11 @@ func GetMe(authId string) entity.User {
 
 	return user
 }
+
+func GetUser(userId string) entity.User {
+  var user entity.User
+
+  database.DB.Where("display_id = ?", userId).First(&user)
+
+  return user
+}

@@ -21,6 +21,7 @@ func GetRouter() *gin.Engine {
 	router.GET("/api/v1/hello", controller.GetHello)
 	router.GET("/api/v1/user", mw.MiddlewareFunc(), controller.GetMe)
 	router.POST("/api/v1/user", controller.CreateUser)
+	router.GET("api/v1/user/:userId", controller.GetUser)
 
 	return router
 }
