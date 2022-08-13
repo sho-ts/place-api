@@ -20,15 +20,12 @@ func CreatePost(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-	var requestBody struct {
-		Caption string `json:"caption"`
-	}
-
+  caption := c.Request.FormValue("caption")
 	postId := util.GetULID()
 	authId := claims["sub"].(string)
 
 	msg := "投稿に失敗しました"
-	_, err = service.CreatePost(postId, authId, requestBody.Caption)
+	_, err = service.CreatePost(postId, authId, caption)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -47,4 +44,16 @@ func CreatePost(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "success",
 	})
+}
+
+func GetPost(c *gin.Context) {
+	o, err := service.GetPost(c.Param("postId"))
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "投稿が見つかりませんでした",
+		})
+	}
+
+	c.JSON(200, o)
 }
