@@ -4,14 +4,14 @@ import (
 	"github.com/sho-ts/place-api/entity"
 )
 
-type GetPostResponseOutput struct {
+type GetPostOutput struct {
 	PostId  string           `json:"postId"`
 	UserId  string           `json:"userId"`
 	Caption string           `json:"caption"`
 	Files   []entity.Storage `json:"files"`
 }
 
-type GetPostsResponseOutput struct {
+type GetPostsOutput struct {
 	PostId    string `json:"postId"`
 	UserId    string `json:"userId"`
 	Caption   string `json:"caption"`

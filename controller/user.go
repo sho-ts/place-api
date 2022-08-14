@@ -3,22 +3,19 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt"
+	"github.com/sho-ts/place-api/constant"
+	"github.com/sho-ts/place-api/dto/input"
 	"github.com/sho-ts/place-api/service"
 	"github.com/sho-ts/place-api/util"
-	"github.com/sho-ts/place-api/constant"
 )
 
 /* ユーザーを新規作成する */
 func CreateUser(c *gin.Context) {
-	var requestBody struct {
-		AuthId    string `json:"authId"`
-		Name      string `json:"name"`
-		DisplayId string `json:"userId"`
-	}
+	var i input.CreateUserInput
 
-	c.ShouldBindJSON(&requestBody)
+	c.ShouldBindJSON(&i)
 
-	user, err := service.CreateUser(requestBody.AuthId, requestBody.DisplayId, requestBody.Name)
+	user, err := service.CreateUser(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{

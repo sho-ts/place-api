@@ -3,13 +3,14 @@ package service
 import (
 	"github.com/sho-ts/place-api/database"
 	"github.com/sho-ts/place-api/entity"
+	"github.com/sho-ts/place-api/dto/input"
 )
 
-func CreateUser(authId string, displayId string, name string) (entity.User, error) {
+func CreateUser(i input.CreateUserInput) (entity.User, error) {
 	user := entity.User{
-		Id:        authId,
-		DisplayId: displayId,
-		Name:      name,
+		Id:        i.UserId,
+		DisplayId: i.DisplayId,
+		Name:      i.Name,
 	}
 
 	result := database.DB.Create(&user)
