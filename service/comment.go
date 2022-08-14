@@ -24,7 +24,7 @@ func CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
 
 func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
 	var s []struct {
-		Id        string
+		CommentId string
 		Content   string
 		PostId    string
 		CreatedAt time.Time
@@ -36,7 +36,7 @@ func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutpu
 	result := database.DB.
 		Table("comments").
 		Select(strings.Join([]string{
-			"comments.id as Id",
+			"comments.id as CommentId",
 			"comments.content as Content",
 			"comments.post_id as PostId",
 			"comments.created_at as CreatedAt",
@@ -53,7 +53,7 @@ func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutpu
 	o := make([]output.GetCommentOutput, len(s))
 	for i := 0; i < len(s); i++ {
 		o[i] = output.GetCommentOutput{
-			Id:        s[i].Id,
+			CommentId: s[i].CommentId,
 			PostId:    s[i].PostId,
 			Content:   s[i].Content,
 			CreatedAt: s[i].CreatedAt,

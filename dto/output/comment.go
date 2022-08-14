@@ -6,7 +6,7 @@ import (
 )
 
 type GetCommentOutput struct {
-	Id        string      `json:"commentId"`
+	CommentId string      `json:"commentId"`
 	PostId    string      `json:"postId"`
 	Content   string      `json:"content"`
 	CreatedAt time.Time   `json:"createdAt"`
