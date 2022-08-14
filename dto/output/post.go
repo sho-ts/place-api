@@ -12,8 +12,8 @@ type GetPostResponseOutput struct {
 }
 
 type GetPostsResponseOutput struct {
-	PostId  string `json:"postId"`
-	UserId  string `json:"userId"`
-	Caption string `json:"caption"`
-	Thumbnail    string `json:"thumbnail"`
+	PostId    string `json:"postId"`
+	UserId    string `json:"userId"`
+	Caption   string `json:"caption"`
+	Thumbnail string `json:"thumbnail"`
 }
