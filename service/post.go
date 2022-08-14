@@ -47,7 +47,7 @@ func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsRespon
 		"storages.url as Thumbnail",
 	}, ",")
 
-	w := "posts.user_id = ?"
+	w := "posts.user_id = (select id from users where display_id = ?)"
 
 	// サブクエリで投稿に複数の画像があった場合の重複除外をしている
 	j := "join storages on storages.id = (select id from storages s2 where s2.post_id = posts.id limit 1)"
