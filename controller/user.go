@@ -5,6 +5,7 @@ import (
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/service"
 	"github.com/sho-ts/place-api/util"
+	"github.com/sho-ts/place-api/constant"
 )
 
 /* ユーザーを新規作成する */
@@ -21,7 +22,7 @@ func CreateUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, gin.H{
-			"message": "ユーザーの作成に失敗しました",
+			"message": constant.FAILED_TO_USER_CREATE,
 		})
 		return
 	}
@@ -38,7 +39,7 @@ func GetMe(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(404, gin.H{
-			"message": "ユーザーが見つかりませんでした",
+			"message": constant.NOT_FOUND_USER,
 		})
 		return
 	}
@@ -52,7 +53,7 @@ func GetUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(404, gin.H{
-			"message": "ユーザーが見つかりませんでした",
+			"message": constant.NOT_FOUND_USER,
 		})
 		return
 	}
@@ -66,12 +67,12 @@ func CheckDuplicateUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(200, gin.H{
-			"message": "ユーザーは存在しません",
+			"message": constant.NOT_FOUND_USER,
 		})
 		return
 	}
 
 	c.JSON(500, gin.H{
-		"message": "該当ユーザーは既に存在します",
+		"message": constant.DUPLICATE_USER,
 	})
 }
