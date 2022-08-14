@@ -121,6 +121,7 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("caption like ?", "%"+search+"%").
+    Order("posts.created_at desc").
 		Limit(limit).
 		Offset(offset).
 		Scan(&s)
@@ -174,6 +175,7 @@ func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput
 		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("posts.user_id = (select id from users where display_id = ?)", userId).
+    Order("posts.created_at desc").
 		Limit(limit).
 		Offset(offset).
 		Scan(&s)
