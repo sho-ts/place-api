@@ -1,12 +1,12 @@
 package service
 
 import (
-	"strings"
-
 	"github.com/sho-ts/place-api/database"
 	"github.com/sho-ts/place-api/dto/input"
 	"github.com/sho-ts/place-api/dto/output"
 	"github.com/sho-ts/place-api/entity"
+	"strings"
+	"time"
 )
 
 func CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
@@ -22,8 +22,16 @@ func CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
 	return comment, result.Error
 }
 
-func GetComments(postId string, limit int, offset int) ([]output.GetCommentsOutput, error) {
-	var o []output.GetCommentsOutput
+func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
+	var s []struct {
+		Id        string
+		Content   string
+		PostId    string
+		CreatedAt time.Time
+		DisplayId string
+		Avatar    string
+		UserName  string
+	}
 
 	result := database.DB.
 		Table("comments").
@@ -31,7 +39,8 @@ func GetComments(postId string, limit int, offset int) ([]output.GetCommentsOutp
 			"comments.id as Id",
 			"comments.content as Content",
 			"comments.post_id as PostId",
-			"users.display_id as UserId",
+			"comments.created_at as CreatedAt",
+			"users.display_id as DisplayId",
 			"users.avatar as Avatar",
 			"users.name as UserName",
 		}, ",")).
@@ -39,7 +48,22 @@ func GetComments(postId string, limit int, offset int) ([]output.GetCommentsOutp
 		Where("comments.post_id = ?", postId).
 		Limit(limit).
 		Offset(offset).
-		Scan(&o)
+		Scan(&s)
+
+	o := make([]output.GetCommentOutput, len(s))
+	for i := 0; i < len(s); i++ {
+		o[i] = output.GetCommentOutput{
+			Id:        s[i].Id,
+			PostId:    s[i].PostId,
+			Content:   s[i].Content,
+			CreatedAt: s[i].CreatedAt,
+			User: entity.User{
+				DisplayId: s[i].DisplayId,
+				Name:      s[i].UserName,
+				Avatar:    s[i].Avatar,
+			},
+		}
+	}
 
 	return o, result.Error
 }
