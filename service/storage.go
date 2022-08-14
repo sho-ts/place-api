@@ -10,6 +10,7 @@ import (
 	"os"
 )
 
+/* S3にファイルをアップロードする */
 func UploadToS3Bucket(file multipart.File, name string) (string, error) {
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(os.Getenv("AWS_S3_REGION")),

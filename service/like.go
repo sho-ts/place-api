@@ -8,6 +8,7 @@ import (
 	"github.com/sho-ts/place-api/util"
 )
 
+/* いいねを追加 */
 func AddLike(i input.HandleLikeInput) error {
 	like := entity.Like{
 		Id:     util.GetULID(),
@@ -20,23 +21,26 @@ func AddLike(i input.HandleLikeInput) error {
 	return result.Error
 }
 
+/* いいねを削除 */
 func RemoveLike(i input.HandleLikeInput) error {
 	var like entity.Like
 
-	// where
-	pw := "post_id = ?"
-	uw := "user_id = ?"
-
-	result := database.DB.Where(pw, i.PostId).Where(uw, i.UserId).Delete(&like)
+	result := database.DB.
+		Where("post_id = ?", i.PostId).
+		Where("user_id = ?", i.UserId).
+		Delete(&like)
 
 	return result.Error
 }
 
+/* いいね数を取得する */
 func GetLikeCount(postId string) (output.CountOutput, error) {
-	w := "post_id = ?"
 	var count int64
 
-	result := database.DB.Table("likes").Where(w, postId).Count(&count)
+	result := database.DB.
+		Table("likes").
+		Where("post_id = ?", postId).
+		Count(&count)
 
 	o := output.CountOutput{
 		Count: count,
@@ -45,18 +49,15 @@ func GetLikeCount(postId string) (output.CountOutput, error) {
 	return o, result.Error
 }
 
+/* すでにいいねしているかどうか */
 func CheckDuplicateLike(i input.HandleLikeInput) (bool, error) {
 	var count int64
 
-	// where
-	pw := "post_id = ?"
-	uw := "user_id = ?"
+	result := database.DB.
+		Table("likes").
+		Where("post_id = ?", i.PostId).
+		Where("user_id = ?", i.UserId).
+		Count(&count)
 
-	result := database.DB.Table("likes").Where(pw, i.PostId).Where(uw, i.UserId).Count(&count)
-
-	if count > 0 {
-		return true, result.Error
-	} else {
-		return false, result.Error
-	}
+	return count > 0, result.Error
 }

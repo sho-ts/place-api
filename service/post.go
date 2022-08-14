@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+/* 投稿を新規作成する */
 func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	tx := database.DB.Begin()
 
@@ -40,6 +41,7 @@ func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	return post, result.Error
 }
 
+/* 指定したIDの投稿を取得する */
 func GetPost(postId string) (output.GetPostOutput, error) {
 	var s struct {
 		PostId    string
@@ -51,7 +53,8 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 		Name      string
 	}
 
-	result := database.DB.Table("posts").
+	result := database.DB.
+		Table("posts").
 		Select(strings.Join([]string{
 			"posts.id as PostId",
 			"posts.caption as Caption",
@@ -67,7 +70,9 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 
 	var files []entity.Storage
 
-	result = database.DB.Where("post_id = ?", postId).Find(&files)
+	result = database.DB.
+		Where("post_id = ?", postId).
+		Find(&files)
 
 	o := output.GetPostOutput{
 		PostId:    s.PostId,
@@ -85,6 +90,7 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 	return o, result.Error
 }
 
+/* 全てのユーザーの投稿一覧を取得する */
 func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
@@ -98,7 +104,7 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 	}
 
 	// 投稿に複数の画像があった場合の重複除外
-	sub := "select id from storages s2 where s2.post_id = posts.id limit 1"
+	sub := "select id from storages s where s.post_id = posts.id limit 1"
 
 	result := database.DB.
 		Table("posts").
@@ -137,6 +143,7 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 	return o, result.Error
 }
 
+/* 指定したユーザーの投稿一覧を取得する */
 func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
@@ -150,7 +157,7 @@ func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput
 	}
 
 	// 投稿に複数の画像があった場合の重複除外
-	sub := "select id from storages s2 where s2.post_id = posts.id limit 1"
+	sub := "select id from storages s where s.post_id = posts.id limit 1"
 
 	result := database.DB.
 		Table("posts").
