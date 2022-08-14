@@ -37,6 +37,26 @@ func GetPost(postId string) (output.GetPostResponseOutput, error) {
 	return o, result.Error
 }
 
+func GetPosts(search string, limit int, offset int) ([]output.GetPostsResponseOutput, error) {
+	var o []output.GetPostsResponseOutput
+
+	s := strings.Join([]string{
+		"posts.id as PostId",
+		"posts.user_id as UserId",
+		"posts.caption as Caption",
+		"storages.url as Thumbnail",
+	}, ",")
+
+	// サブクエリで投稿に複数の画像があった場合の重複除外をしている
+	j := "join storages on storages.id = (select id from storages s2 where s2.post_id = posts.id limit 1)"
+
+	w := "caption like ?"
+
+	result := database.DB.Table("posts").Select(s).Joins(j).Where(w, "%" + search + "%").Limit(limit).Offset(offset).Scan(&o)
+
+	return o, result.Error
+}
+
 func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsResponseOutput, error) {
 	var o []output.GetPostsResponseOutput
 

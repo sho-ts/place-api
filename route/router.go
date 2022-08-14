@@ -26,8 +26,9 @@ func GetRouter() *gin.Engine {
 	router.GET("/api/v1/user/:userId/posts", controller.GetUserPosts)
 	router.GET("/api/v1/user/duplicate/:userId", controller.CheckDuplicateUser)
 
-	router.GET("/api/v1/post/:postId", controller.GetPost)
+	router.GET("/api/v1/post", controller.GetPosts)
 	router.POST("/api/v1/post", mw.MiddlewareFunc(), controller.CreatePost)
+	router.GET("/api/v1/post/:postId", controller.GetPost)
 
 	return router
 }
