@@ -24,6 +24,7 @@ func Migrate() {
 	DB.AutoMigrate(
 		&entity.User{},
 		&entity.Post{},
+		&entity.Comment{},
 		&entity.Storage{},
 	)
 }
