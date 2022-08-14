@@ -38,3 +38,17 @@ func CreateComment(c *gin.Context) {
 
 	c.JSON(200, comment)
 }
+
+func GetComments(c *gin.Context) {
+	limit, offset := util.GetLimitAndOffset(c)
+	o, err := service.GetComments(c.Param("postId"), limit, offset)
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": constant.FAILED_TO_GET_COMMENTS,
+		})
+		return
+	}
+
+	c.JSON(200, o)
+}
