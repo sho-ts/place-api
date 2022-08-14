@@ -5,8 +5,15 @@ import (
 )
 
 type GetPostResponseOutput struct {
-	PostId string `json:"postId"`
-	UserId string `json:"userId"`
-  Caption string `json:"caption"`
-  Files []entity.Storage `json:"files"`
+	PostId  string           `json:"postId"`
+	UserId  string           `json:"userId"`
+	Caption string           `json:"caption"`
+	Files   []entity.Storage `json:"files"`
+}
+
+type GetPostsResponseOutput struct {
+	PostId  string `json:"postId"`
+	UserId  string `json:"userId"`
+	Caption string `json:"caption"`
+	Thumbnail    string `json:"thumbnail"`
 }

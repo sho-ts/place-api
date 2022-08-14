@@ -4,6 +4,7 @@ import (
 	"github.com/sho-ts/place-api/database"
 	"github.com/sho-ts/place-api/dto/output"
 	"github.com/sho-ts/place-api/entity"
+	"strings"
 )
 
 func CreatePost(postId string, authId string, caption string) (entity.Post, error) {
@@ -32,6 +33,26 @@ func GetPost(postId string) (output.GetPostResponseOutput, error) {
 		Caption: post.Caption,
 		Files:   files,
 	}
+
+	return o, result.Error
+}
+
+func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsResponseOutput, error) {
+	var o []output.GetPostsResponseOutput
+
+	s := strings.Join([]string{
+		"posts.id as PostId",
+		"posts.user_id as UserId",
+		"posts.caption as Caption",
+		"storages.url as Thumbnail",
+	}, ",")
+
+	w := "posts.user_id = ?"
+
+	// サブクエリで投稿に複数の画像があった場合の重複除外をしている
+	j := "join storages on storages.id = (select id from storages s2 where s2.post_id = posts.id limit 1)"
+
+	result := database.DB.Table("posts").Select(s).Joins(j).Where(w, userId).Limit(limit).Offset(offset).Scan(&o)
 
 	return o, result.Error
 }

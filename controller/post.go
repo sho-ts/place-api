@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/service"
@@ -20,7 +22,7 @@ func CreatePost(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-  caption := c.Request.FormValue("caption")
+	caption := c.Request.FormValue("caption")
 	postId := util.GetULID()
 	authId := claims["sub"].(string)
 
@@ -53,6 +55,31 @@ func GetPost(c *gin.Context) {
 		c.JSON(404, gin.H{
 			"message": "投稿が見つかりませんでした",
 		})
+	}
+
+	c.JSON(200, o)
+}
+
+func GetUserPosts(c *gin.Context) {
+	limit, err := strconv.Atoi(c.Query("limit"))
+
+	if err != nil || limit > 30 {
+		limit = 10
+	}
+
+	offset, err := strconv.Atoi(c.Query("offset"))
+
+	if err != nil {
+		offset = 0
+	}
+
+	o, err := service.GetUserPosts(c.Param("userId"), limit, offset)
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "投稿が見つかりませんでした",
+		})
+		return
 	}
 
 	c.JSON(200, o)
