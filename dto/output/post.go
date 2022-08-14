@@ -6,14 +6,14 @@ import (
 
 type GetPostOutput struct {
 	PostId  string           `json:"postId"`
-	UserId  string           `json:"userId"`
 	Caption string           `json:"caption"`
 	Files   []entity.Storage `json:"files"`
+	User    entity.User      `json:"user"`
 }
 
 type GetPostsOutput struct {
-	PostId    string `json:"postId"`
-	UserId    string `json:"userId"`
-	Caption   string `json:"caption"`
-	Thumbnail string `json:"thumbnail"`
+	PostId    string      `json:"postId"`
+	Caption   string      `json:"caption"`
+	Thumbnail string      `json:"thumbnail"`
+	User      entity.User `json:"user"`
 }
