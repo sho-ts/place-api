@@ -46,6 +46,7 @@ func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutpu
 		}, ",")).
 		Joins("join users on users.id = comments.user_id").
 		Where("comments.post_id = ?", postId).
+		Order("comments.created_at desc").
 		Limit(limit).
 		Offset(offset).
 		Scan(&s)
