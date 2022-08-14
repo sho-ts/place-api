@@ -25,6 +25,7 @@ func Migrate() {
 		&entity.User{},
 		&entity.Post{},
 		&entity.Comment{},
+		&entity.Like{},
 		&entity.Storage{},
 	)
 }

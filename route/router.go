@@ -29,9 +29,11 @@ func GetRouter() *gin.Engine {
 	router.GET("/api/v1/post", controller.GetPosts)
 	router.POST("/api/v1/post", mw.MiddlewareFunc(), controller.CreatePost)
 	router.GET("/api/v1/post/:postId", controller.GetPost)
+	router.GET("/api/v1/post/:postId/like/count", controller.GetLikeCount)
+	router.PUT("/api/v1/post/like", mw.MiddlewareFunc(), controller.Like)
 
 	router.GET("/api/v1/post/:postId/comment", controller.GetComments)
-  router.POST("/api/v1/post/comment", mw.MiddlewareFunc(), controller.CreateComment)
+	router.POST("/api/v1/post/comment", mw.MiddlewareFunc(), controller.CreateComment)
 
 	return router
 }
