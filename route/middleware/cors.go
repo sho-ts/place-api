@@ -25,7 +25,7 @@ func GetCorsOption() gin.HandlerFunc {
 			"Content-Type",
 			"Content-Length",
 			"Accept-Encoding",
-			"Authorization",
+			"Authentication",
 		},
 		AllowCredentials: true,
 		MaxAge:           24 * time.Hour,
