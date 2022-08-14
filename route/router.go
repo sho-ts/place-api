@@ -29,6 +29,7 @@ func GetRouter() *gin.Engine {
 	r.GET("/api/v1/post", controller.GetPosts)
 	r.POST("/api/v1/post", mw.MiddlewareFunc(), controller.CreatePost)
 	r.GET("/api/v1/post/:postId", controller.GetPost)
+  
 	r.GET("/api/v1/post/:postId/like/count", controller.GetLikeCount)
 	r.PUT("/api/v1/post/like", mw.MiddlewareFunc(), controller.Like)
 
