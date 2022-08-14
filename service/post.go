@@ -42,7 +42,7 @@ func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 }
 
 /* 指定したIDの投稿を取得する */
-func GetPost(postId string) (output.GetPostOutput, error) {
+func GetPost(postId string, userId string) (output.GetPostOutput, error) {
 	var s struct {
 		PostId    string
 		Caption   string
@@ -51,19 +51,43 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 		DisplayId string
 		Avatar    string
 		Name      string
+		Liked     int
 	}
 
+	sel := strings.Join([]string{
+		"posts.id as PostId",
+		"posts.caption as Caption",
+		"posts.user_id as UserId",
+		"posts.created_at as CreatedAt",
+		"users.display_id as DisplayId",
+		"users.avatar as Avatar",
+		"users.name as Name",
+	}, ",")
+
+	// ------------------------
+	// ユーザーIDを渡している場合、既にいいねしているかどうかも調べる
+	if userId != "" {
+		sel = sel + ",case when liked.post_id is null then 0 else 1 end as Liked"
+	}
+
+	// サブクエリ
+	sub := database.DB.Table("likes").
+		Select("post_id").
+		Where("user_id = ?", userId).
+		Where("post_id = ?", postId).
+		Limit(1)
+
+	var sj string
+	if userId != "" {
+		sj = "left join (?) as liked on liked.post_id = posts.id"
+	}
+	// ------------------------
+
 	result := database.DB.
+		Debug().
 		Table("posts").
-		Select(strings.Join([]string{
-			"posts.id as PostId",
-			"posts.caption as Caption",
-			"posts.user_id as UserId",
-			"posts.created_at as CreatedAt",
-			"users.display_id as DisplayId",
-			"users.avatar as Avatar",
-			"users.name as Name",
-		}, ",")).
+		Select(sel).
+		Joins(sj, sub).
 		Joins("join users on users.id = posts.user_id").
 		Where("posts.id = ?", postId).
 		Scan(&s)
@@ -78,6 +102,7 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 		PostId:    s.PostId,
 		Caption:   s.Caption,
 		CreatedAt: s.CreatedAt,
+		Liked:     s.Liked,
 		Files:     files,
 		User: entity.User{
 			Id:        s.UserId,
@@ -121,7 +146,7 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("caption like ?", "%"+search+"%").
-    Order("posts.created_at desc").
+		Order("posts.created_at desc").
 		Limit(limit).
 		Offset(offset).
 		Scan(&s)
@@ -175,7 +200,7 @@ func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput
 		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("posts.user_id = (select id from users where display_id = ?)", userId).
-    Order("posts.created_at desc").
+		Order("posts.created_at desc").
 		Limit(limit).
 		Offset(offset).
 		Scan(&s)

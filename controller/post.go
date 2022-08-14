@@ -43,7 +43,7 @@ func CreatePost(c *gin.Context) {
 }
 
 func GetPost(c *gin.Context) {
-	o, err := service.GetPost(c.Param("postId"))
+	o, err := service.GetPost(c.Param("postId"), c.Query("userId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
