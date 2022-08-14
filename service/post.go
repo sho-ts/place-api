@@ -7,6 +7,7 @@ import (
 	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
 	"strings"
+	"time"
 )
 
 func CreatePost(i input.CreatePostInput) (entity.Post, error) {
@@ -40,43 +41,44 @@ func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 }
 
 func GetPost(postId string) (output.GetPostOutput, error) {
-	var post struct {
-		PostId    string `json:"postId"`
-		Caption   string `json:"caption"`
-		UserId    string `json:"userId"`
-		DisplayId string `json:"displayId"`
-		Avatar    string `json:"avatar"`
-		Name      string `json:"name"`
+	var s struct {
+		PostId    string
+		Caption   string
+		CreatedAt time.Time
+		UserId    string
+		DisplayId string
+		Avatar    string
+		Name      string
 	}
 
-	s := strings.Join([]string{
-		"posts.id as PostId",
-		"posts.caption as Caption",
-		"posts.user_id as UserId",
-		"users.display_id as DisplayId",
-		"users.avatar as Avatar",
-		"users.name as Name",
-	}, ",")
-
 	result := database.DB.Table("posts").
-		Select(s).
+		Select(strings.Join([]string{
+			"posts.id as PostId",
+			"posts.caption as Caption",
+			"posts.user_id as UserId",
+			"posts.created_at as CreatedAt",
+			"users.display_id as DisplayId",
+			"users.avatar as Avatar",
+			"users.name as Name",
+		}, ",")).
 		Joins("join users on users.id = posts.user_id").
 		Where("posts.id = ?", postId).
-		Scan(&post)
+		Scan(&s)
 
 	var files []entity.Storage
 
 	result = database.DB.Where("post_id = ?", postId).Find(&files)
 
 	o := output.GetPostOutput{
-		PostId:  post.PostId,
-		Caption: post.Caption,
-		Files:   files,
+		PostId:    s.PostId,
+		Caption:   s.Caption,
+		CreatedAt: s.CreatedAt,
+		Files:     files,
 		User: entity.User{
-			Id:        post.UserId,
-			DisplayId: post.DisplayId,
-			Avatar:    post.Avatar,
-			Name:      post.Name,
+			Id:        s.UserId,
+			DisplayId: s.DisplayId,
+			Avatar:    s.Avatar,
+			Name:      s.Name,
 		},
 	}
 
@@ -84,49 +86,50 @@ func GetPost(postId string) (output.GetPostOutput, error) {
 }
 
 func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
-	var posts []struct {
-		PostId    string `json:"postId"`
-		Caption   string `json:"caption"`
-		Thumbnail string `json:"thumbnail"`
-		UserId    string `json:"userId"`
-		DisplayId string `json:"displayId"`
-		Avatar    string `json:"avatar"`
-		Name      string `json:"name"`
+	var s []struct {
+		PostId    string
+		Caption   string
+		CreatedAt time.Time
+		Thumbnail string
+		UserId    string
+		DisplayId string
+		Avatar    string
+		Name      string
 	}
 
-	s := strings.Join([]string{
-		"posts.id as PostId",
-		"posts.user_id as UserId",
-		"posts.caption as Caption",
-		"storages.url as Thumbnail",
-		"users.display_id as DisplayId",
-		"users.avatar as Avatar",
-		"users.name as Name",
-	}, ",")
-
 	// 投稿に複数の画像があった場合の重複除外
-	sq := "select id from storages s2 where s2.post_id = posts.id limit 1"
+	sub := "select id from storages s2 where s2.post_id = posts.id limit 1"
 
 	result := database.DB.
 		Table("posts").
-		Select(s).
-		Joins("join storages on storages.id = ("+sq+")").
+		Select(strings.Join([]string{
+			"posts.id as PostId",
+			"posts.user_id as UserId",
+			"posts.caption as Caption",
+			"posts.created_at as CreatedAt",
+			"storages.url as Thumbnail",
+			"users.display_id as DisplayId",
+			"users.avatar as Avatar",
+			"users.name as Name",
+		}, ",")).
+		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("caption like ?", "%"+search+"%").
 		Limit(limit).
 		Offset(offset).
-		Scan(&posts)
+		Scan(&s)
 
-	o := make([]output.GetPostsOutput, len(posts))
-	for i := 0; i < len(posts); i++ {
+	o := make([]output.GetPostsOutput, len(s))
+	for i := 0; i < len(s); i++ {
 		o[i] = output.GetPostsOutput{
-			PostId:    posts[i].PostId,
-			Caption:   posts[i].Caption,
-			Thumbnail: posts[i].Thumbnail,
+			PostId:    s[i].PostId,
+			Caption:   s[i].Caption,
+			CreatedAt: s[i].CreatedAt,
+			Thumbnail: s[i].Thumbnail,
 			User: entity.User{
-				DisplayId: posts[i].DisplayId,
-				Name:      posts[i].Name,
-				Avatar:    posts[i].Avatar,
+				DisplayId: s[i].DisplayId,
+				Name:      s[i].Name,
+				Avatar:    s[i].Avatar,
 			},
 		}
 	}
@@ -135,49 +138,50 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 }
 
 func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
-	var posts []struct {
-		PostId    string `json:"postId"`
-		Caption   string `json:"caption"`
-		Thumbnail string `json:"thumbnail"`
-		UserId    string `json:"userId"`
-		DisplayId string `json:"displayId"`
-		Avatar    string `json:"avatar"`
-		Name      string `json:"name"`
+	var s []struct {
+		PostId    string
+		Caption   string
+		CreatedAt time.Time
+		Thumbnail string
+		UserId    string
+		DisplayId string
+		Avatar    string
+		Name      string
 	}
 
-	s := strings.Join([]string{
-		"posts.id as PostId",
-		"posts.user_id as UserId",
-		"posts.caption as Caption",
-		"storages.url as Thumbnail",
-		"users.display_id as DisplayId",
-		"users.avatar as Avatar",
-		"users.name as Name",
-	}, ",")
-
 	// 投稿に複数の画像があった場合の重複除外
-	sq := "select id from storages s2 where s2.post_id = posts.id limit 1"
+	sub := "select id from storages s2 where s2.post_id = posts.id limit 1"
 
 	result := database.DB.
 		Table("posts").
-		Select(s).
-		Joins("join storages on storages.id = ("+sq+")").
+		Select(strings.Join([]string{
+			"posts.id as PostId",
+			"posts.user_id as UserId",
+			"posts.caption as Caption",
+			"posts.created_at as CreatedAt",
+			"storages.url as Thumbnail",
+			"users.display_id as DisplayId",
+			"users.avatar as Avatar",
+			"users.name as Name",
+		}, ",")).
+		Joins("join storages on storages.id = ("+sub+")").
 		Joins("join users on users.id = posts.user_id").
 		Where("posts.user_id = (select id from users where display_id = ?)", userId).
 		Limit(limit).
 		Offset(offset).
-		Scan(&posts)
+		Scan(&s)
 
-	o := make([]output.GetPostsOutput, len(posts))
-	for i := 0; i < len(posts); i++ {
+	o := make([]output.GetPostsOutput, len(s))
+	for i := 0; i < len(s); i++ {
 		o[i] = output.GetPostsOutput{
-			PostId:    posts[i].PostId,
-			Caption:   posts[i].Caption,
-			Thumbnail: posts[i].Thumbnail,
+			PostId:    s[i].PostId,
+			Caption:   s[i].Caption,
+			CreatedAt: s[i].CreatedAt,
+			Thumbnail: s[i].Thumbnail,
 			User: entity.User{
-				DisplayId: posts[i].DisplayId,
-				Name:      posts[i].Name,
-				Avatar:    posts[i].Avatar,
+				DisplayId: s[i].DisplayId,
+				Name:      s[i].Name,
+				Avatar:    s[i].Avatar,
 			},
 		}
 	}
