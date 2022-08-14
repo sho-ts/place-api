@@ -34,7 +34,7 @@ func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 		return post, result.Error
 	}
 
-  tx.Commit()
+	tx.Commit()
 
 	return post, result.Error
 }
@@ -69,8 +69,10 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 
 	w := "caption like ?"
 
-  // サブクエリで投稿に複数の画像があった場合の重複除外をしている
-	j := "join storages on storages.id = (select id from storages s2 where s2.post_id = posts.id limit 1)"
+	// 投稿に複数の画像があった場合の重複除外
+	sq := "select id from storages s2 where s2.post_id = posts.id limit 1"
+
+	j := "join storages on storages.id = (" + sq + ")"
 
 	result := database.DB.Table("posts").Select(s).Joins(j).Where(w, "%"+search+"%").Limit(limit).Offset(offset).Scan(&o)
 
@@ -89,8 +91,10 @@ func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput
 
 	w := "posts.user_id = (select id from users where display_id = ?)"
 
-	// サブクエリで投稿に複数の画像があった場合の重複除外をしている
-	j := "join storages on storages.id = (select id from storages s2 where s2.post_id = posts.id limit 1)"
+	// 投稿に複数の画像があった場合の重複除外
+	sq := "select id from storages s2 where s2.post_id = posts.id limit 1"
+
+	j := "join storages on storages.id = (" + sq + ")"
 
 	result := database.DB.Table("posts").Select(s).Joins(j).Where(w, userId).Limit(limit).Offset(offset).Scan(&o)
 
