@@ -15,8 +15,8 @@ import (
 type IPostService interface {
 	CreatePost(i input.CreatePostInput) (entity.Post, error)
 	GetPost(postId string, userId string) (output.GetPostOutput, error)
-	GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error)
-	GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error)
+	GetPosts(search string, limit int, offset int) (output.GetPostsOutput, error)
+	GetUserPosts(userId string, limit int, offset int) (output.GetPostsOutput, error)
 }
 
 type IStorageService interface {
