@@ -103,24 +103,24 @@ func (ps PostService) GetPost(postId string, userId string) (output.GetPostOutpu
 		Where("post_id = ?", postId).
 		Find(&files)
 
-	o := output.GetPostOutput{
-		PostId:    s.PostId,
-		Caption:   s.Caption,
-		CreatedAt: s.CreatedAt,
-		Liked:     s.Liked,
-		Files:     files,
-		User: entity.User{
+	o := output.NewGetPostOutput(
+		s.PostId,
+		s.Caption,
+		s.CreatedAt,
+		s.Liked,
+		files,
+		entity.User{
 			Id:        s.UserId,
 			DisplayId: s.DisplayId,
 			Avatar:    s.Avatar,
 			Name:      s.Name,
 		},
-	}
+	)
 
 	return o, result.Error
 }
 
-func (ps PostService) GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (ps PostService) GetPosts(search string, limit int, offset int) (output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string
@@ -155,25 +155,26 @@ func (ps PostService) GetPosts(search string, limit int, offset int) ([]output.G
 		Offset(offset).
 		Scan(&s)
 
-	o := make([]output.GetPostsOutput, len(s))
+	items := make([]output.GetPostsOutputItem, len(s))
 	for i := 0; i < len(s); i++ {
-		o[i] = output.GetPostsOutput{
-			PostId:    s[i].PostId,
-			Caption:   s[i].Caption,
-			CreatedAt: s[i].CreatedAt,
-			Thumbnail: s[i].Thumbnail,
-			User: entity.User{
+		items[i] = output.NewGetPostsOutputItem(
+			s[i].PostId,
+			s[i].Caption,
+			s[i].CreatedAt,
+			s[i].Thumbnail,
+			entity.User{
 				DisplayId: s[i].DisplayId,
 				Name:      s[i].Name,
 				Avatar:    s[i].Avatar,
 			},
-		}
+		)
 	}
+	o := output.NewGetPostsOutput(items)
 
 	return o, result.Error
 }
 
-func (ps PostService) GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (ps PostService) GetUserPosts(userId string, limit int, offset int) (output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string
@@ -208,20 +209,21 @@ func (ps PostService) GetUserPosts(userId string, limit int, offset int) ([]outp
 		Offset(offset).
 		Scan(&s)
 
-	o := make([]output.GetPostsOutput, len(s))
+	items := make([]output.GetPostsOutputItem, len(s))
 	for i := 0; i < len(s); i++ {
-		o[i] = output.GetPostsOutput{
-			PostId:    s[i].PostId,
-			Caption:   s[i].Caption,
-			CreatedAt: s[i].CreatedAt,
-			Thumbnail: s[i].Thumbnail,
-			User: entity.User{
+		items[i] = output.NewGetPostsOutputItem(
+			s[i].PostId,
+			s[i].Caption,
+			s[i].CreatedAt,
+			s[i].Thumbnail,
+			entity.User{
 				DisplayId: s[i].DisplayId,
 				Name:      s[i].Name,
 				Avatar:    s[i].Avatar,
 			},
-		}
+		)
 	}
+	o := output.NewGetPostsOutput(items)
 
 	return o, result.Error
 }

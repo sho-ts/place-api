@@ -8,11 +8,11 @@ import (
 	"github.com/sho-ts/place-api/util"
 )
 
-type LikeService struct {}
+type LikeService struct{}
 
-func NewLikeService () LikeService {
-  likeService := LikeService{}
-  return likeService
+func NewLikeService() LikeService {
+	likeService := LikeService{}
+	return likeService
 }
 
 func (ls LikeService) AddLike(i input.HandleLikeInput) error {
@@ -46,9 +46,7 @@ func (ls LikeService) GetLikeCount(postId string) (output.CountOutput, error) {
 		Where("post_id = ?", postId).
 		Count(&count)
 
-	o := output.CountOutput{
-		Count: count,
-	}
+	o := output.NewCountOutput(count)
 
 	return o, result.Error
 }

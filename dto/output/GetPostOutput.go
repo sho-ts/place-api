@@ -14,10 +14,20 @@ type GetPostOutput struct {
 	User      entity.User      `json:"user"`
 }
 
-type GetPostsOutput struct {
-	PostId    string      `json:"postId"`
-	Caption   string      `json:"caption"`
-	CreatedAt time.Time   `json:"createdAt"`
-	Thumbnail string      `json:"thumbnail"`
-	User      entity.User `json:"user"`
+func NewGetPostOutput(
+	postId string,
+	caption string,
+	createdAt time.Time,
+	liked int,
+	files []entity.Storage,
+	user entity.User,
+) GetPostOutput {
+	return GetPostOutput{
+		PostId:    postId,
+		Caption:   caption,
+		CreatedAt: createdAt,
+		Liked:     liked,
+		Files:     files,
+		User:      user,
+	}
 }

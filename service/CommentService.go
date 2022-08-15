@@ -60,17 +60,17 @@ func (cs CommentService) GetComments(postId string, limit int, offset int) ([]ou
 
 	o := make([]output.GetCommentOutput, len(s))
 	for i := 0; i < len(s); i++ {
-		o[i] = output.GetCommentOutput{
-			CommentId: s[i].CommentId,
-			PostId:    s[i].PostId,
-			Content:   s[i].Content,
-			CreatedAt: s[i].CreatedAt,
-			User: entity.User{
+		o[i] = output.NewGetCommentOutput(
+			s[i].CommentId,
+			s[i].PostId,
+			s[i].Content,
+			s[i].CreatedAt,
+			entity.User{
 				DisplayId: s[i].DisplayId,
 				Name:      s[i].UserName,
 				Avatar:    s[i].Avatar,
 			},
-		}
+		)
 	}
 
 	return o, result.Error
