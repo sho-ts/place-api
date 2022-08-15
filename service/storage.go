@@ -10,6 +10,31 @@ import (
 	"os"
 )
 
+type StorageService struct{}
+
+func NewStorageService() StorageService {
+	storageService := StorageService{}
+	return storageService
+}
+
+func (this StorageService) UploadToS3Bucket(file multipart.File, name string) (string, error) {
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region:      aws.String(os.Getenv("AWS_S3_REGION")),
+		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_S3_ACCESS_KEY"), os.Getenv("AWS_S3_SECRET_KEY"), ""),
+	}))
+
+	uploader := s3manager.NewUploader(sess)
+
+	output, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET_NAME")),
+		Body:   aws.ReadSeekCloser(file),
+		Key:    aws.String(util.GetULID() + name),
+		ACL:    aws.String("public-read"),
+	})
+
+	return output.Location, err
+}
+
 /* S3にファイルをアップロードする */
 func UploadToS3Bucket(file multipart.File, name string) (string, error) {
 	sess := session.Must(session.NewSession(&aws.Config{

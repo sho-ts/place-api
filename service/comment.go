@@ -9,7 +9,14 @@ import (
 	"time"
 )
 
-func CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
+type CommentService struct{}
+
+func NewCommentService() CommentService {
+	commentService := CommentService{}
+	return commentService
+}
+
+func (this CommentService) CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
 	comment := entity.Comment{
 		Id:      i.Id,
 		UserId:  i.UserId,
@@ -22,7 +29,7 @@ func CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
 	return comment, result.Error
 }
 
-func GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
+func (this CommentService) GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
 	var s []struct {
 		CommentId string
 		Content   string

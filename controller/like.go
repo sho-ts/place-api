@@ -5,11 +5,29 @@ import (
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
 	"github.com/sho-ts/place-api/dto/input"
-	"github.com/sho-ts/place-api/service"
+	"github.com/sho-ts/place-api/dto/output"
 	"github.com/sho-ts/place-api/util"
 )
 
-func Like(c *gin.Context) {
+type ILikeService interface {
+	AddLike(i input.HandleLikeInput) error
+	RemoveLike(i input.HandleLikeInput) error
+	GetLikeCount(postId string) (output.CountOutput, error)
+	CheckDuplicateLike(i input.HandleLikeInput) (bool, error)
+}
+
+type LikeController struct {
+	likeService ILikeService
+}
+
+func NewLikeController(likeService ILikeService) LikeController {
+	likeController := LikeController{
+		likeService: likeService,
+	}
+	return likeController
+}
+
+func (this LikeController) Like(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
@@ -24,7 +42,7 @@ func Like(c *gin.Context) {
 		UserId: claims["sub"].(string),
 	}
 
-	d, err := service.CheckDuplicateLike(i)
+	d, err := this.likeService.CheckDuplicateLike(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -34,9 +52,9 @@ func Like(c *gin.Context) {
 	}
 
 	if !d {
-		err = service.AddLike(i)
+		err = this.likeService.AddLike(i)
 	} else {
-		err = service.RemoveLike(i)
+		err = this.likeService.RemoveLike(i)
 	}
 
 	if err != nil {
@@ -51,14 +69,14 @@ func Like(c *gin.Context) {
 	})
 }
 
-func GetLikeCount(c *gin.Context) {
-	o, err := service.GetLikeCount(c.Param("postId"))
+func (this LikeController) GetLikeCount(c *gin.Context) {
+	o, err := this.likeService.GetLikeCount(c.Param("postId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
 			"message": constant.FAILED_TO_GET_LIKE,
 		})
-    return
+		return
 	}
 
 	c.JSON(200, o)

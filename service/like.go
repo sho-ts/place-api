@@ -8,8 +8,14 @@ import (
 	"github.com/sho-ts/place-api/util"
 )
 
-/* いいねを追加 */
-func AddLike(i input.HandleLikeInput) error {
+type LikeService struct {}
+
+func NewLikeService () LikeService {
+  likeService := LikeService{}
+  return likeService
+}
+
+func (this LikeService) AddLike(i input.HandleLikeInput) error {
 	like := entity.Like{
 		Id:     util.GetULID(),
 		PostId: i.PostId,
@@ -21,8 +27,7 @@ func AddLike(i input.HandleLikeInput) error {
 	return result.Error
 }
 
-/* いいねを削除 */
-func RemoveLike(i input.HandleLikeInput) error {
+func (this LikeService) RemoveLike(i input.HandleLikeInput) error {
 	var like entity.Like
 
 	result := database.DB.
@@ -33,8 +38,7 @@ func RemoveLike(i input.HandleLikeInput) error {
 	return result.Error
 }
 
-/* いいね数を取得する */
-func GetLikeCount(postId string) (output.CountOutput, error) {
+func (this LikeService) GetLikeCount(postId string) (output.CountOutput, error) {
 	var count int64
 
 	result := database.DB.
@@ -49,8 +53,7 @@ func GetLikeCount(postId string) (output.CountOutput, error) {
 	return o, result.Error
 }
 
-/* すでにいいねしているかどうか */
-func CheckDuplicateLike(i input.HandleLikeInput) (bool, error) {
+func (this LikeService) CheckDuplicateLike(i input.HandleLikeInput) (bool, error) {
 	var count int64
 
 	result := database.DB.

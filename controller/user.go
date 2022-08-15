@@ -5,17 +5,32 @@ import (
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
 	"github.com/sho-ts/place-api/dto/input"
-	"github.com/sho-ts/place-api/service"
+	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
 )
 
-/* ユーザーを新規作成する */
-func CreateUser(c *gin.Context) {
-	var i input.CreateUserInput
+type IUserService interface {
+	CreateUser(i input.CreateUserInput) (entity.User, error)
+  GetMe(authId string) (entity.User, error)
+  GetUser(userId string) (entity.User, error)
+}
 
+type UserController struct {
+	userService IUserService
+}
+
+func NewUserController(userService IUserService) UserController {
+	userController := UserController{
+		userService: userService,
+	}
+	return userController
+}
+
+func (this UserController) CreateUser(c *gin.Context) {
+	var i input.CreateUserInput
 	c.ShouldBindJSON(&i)
 
-	user, err := service.CreateUser(i)
+	user, err := this.userService.CreateUser(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -27,12 +42,11 @@ func CreateUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-/* ログインしているユーザーを取得する */
-func GetMe(c *gin.Context) {
+func (this UserController) GetMe(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-	user, err := service.GetMe(claims["sub"].(string))
+	user, err := this.userService.GetMe(claims["sub"].(string))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -44,9 +58,8 @@ func GetMe(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-/* ユーザーを取得する */
-func GetUser(c *gin.Context) {
-	user, err := service.GetUser(c.Param("userId"))
+func (this UserController) GetUser(c *gin.Context) {
+	user, err := this.userService.GetUser(c.Param("userId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -59,8 +72,8 @@ func GetUser(c *gin.Context) {
 }
 
 /* ユーザーの重複を確認する */
-func CheckDuplicateUser(c *gin.Context) {
-	_, err := service.GetUser(c.Param("userId"))
+func (this UserController) CheckDuplicateUser(c *gin.Context) {
+	_, err := this.userService.GetUser(c.Param("userId"))
 
 	if err != nil {
 		c.JSON(200, gin.H{

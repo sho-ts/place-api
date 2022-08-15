@@ -5,11 +5,28 @@ import (
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
 	"github.com/sho-ts/place-api/dto/input"
-	"github.com/sho-ts/place-api/service"
+	"github.com/sho-ts/place-api/dto/output"
+	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
 )
 
-func CreateComment(c *gin.Context) {
+type ICommentService interface {
+	CreateComment(i input.CreateCommentInput) (entity.Comment, error)
+	GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error)
+}
+
+type CommentController struct {
+	commentService ICommentService
+}
+
+func NewCommentController(commentService ICommentService) CommentController {
+	commentController := CommentController{
+		commentService: commentService,
+	}
+	return commentController
+}
+
+func (this CommentController) CreateComment(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
@@ -27,7 +44,7 @@ func CreateComment(c *gin.Context) {
 		Content: r.Content,
 	}
 
-	comment, err := service.CreateComment(i)
+	comment, err := this.commentService.CreateComment(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -39,9 +56,9 @@ func CreateComment(c *gin.Context) {
 	c.JSON(200, comment)
 }
 
-func GetComments(c *gin.Context) {
+func (this CommentController) GetComments(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
-	o, err := service.GetComments(c.Param("postId"), limit, offset)
+	o, err := this.commentService.GetComments(c.Param("postId"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{

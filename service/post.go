@@ -10,8 +10,14 @@ import (
 	"time"
 )
 
-/* 投稿を新規作成する */
-func CreatePost(i input.CreatePostInput) (entity.Post, error) {
+type PostService struct{}
+
+func NewPostService() PostService {
+	postService := PostService{}
+	return postService
+}
+
+func (this PostService) CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	tx := database.DB.Begin()
 
 	post := entity.Post{
@@ -41,8 +47,7 @@ func CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	return post, result.Error
 }
 
-/* 指定したIDの投稿を取得する */
-func GetPost(postId string, userId string) (output.GetPostOutput, error) {
+func (this PostService) GetPost(postId string, userId string) (output.GetPostOutput, error) {
 	var s struct {
 		PostId    string
 		Caption   string
@@ -115,8 +120,7 @@ func GetPost(postId string, userId string) (output.GetPostOutput, error) {
 	return o, result.Error
 }
 
-/* 全てのユーザーの投稿一覧を取得する */
-func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (this PostService) GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string
@@ -169,8 +173,7 @@ func GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, er
 	return o, result.Error
 }
 
-/* 指定したユーザーの投稿一覧を取得する */
-func GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (this PostService) GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string

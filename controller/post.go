@@ -5,13 +5,42 @@ import (
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
 	"github.com/sho-ts/place-api/dto/input"
-	"github.com/sho-ts/place-api/service"
+	"github.com/sho-ts/place-api/dto/output"
+	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
+	"mime/multipart"
 )
 
-func CreatePost(c *gin.Context) {
+type IPostService interface {
+	CreatePost(i input.CreatePostInput) (entity.Post, error)
+	GetPost(postId string, userId string) (output.GetPostOutput, error)
+	GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error)
+	GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error)
+}
+
+type IStorageService interface {
+	UploadToS3Bucket(file multipart.File, name string) (string, error)
+}
+
+type PostController struct {
+	postService    IPostService
+	storageService IStorageService
+}
+
+func NewPostController(
+	postService IPostService,
+	storageService IStorageService,
+) PostController {
+	postController := PostController{
+		postService:    postService,
+		storageService: storageService,
+	}
+	return postController
+}
+
+func (this PostController) CreatePost(c *gin.Context) {
 	file, header, _ := c.Request.FormFile("attachmentFile")
-	path, err := service.UploadToS3Bucket(file, header.Filename)
+	path, err := this.storageService.UploadToS3Bucket(file, header.Filename)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -29,7 +58,7 @@ func CreatePost(c *gin.Context) {
 		Urls:    []string{path},
 	}
 
-	_, err = service.CreatePost(i)
+	_, err = this.postService.CreatePost(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -42,8 +71,8 @@ func CreatePost(c *gin.Context) {
 	})
 }
 
-func GetPost(c *gin.Context) {
-	o, err := service.GetPost(c.Param("postId"), c.Query("userId"))
+func (this PostController) GetPost(c *gin.Context) {
+	o, err := this.postService.GetPost(c.Param("postId"), c.Query("userId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -54,10 +83,10 @@ func GetPost(c *gin.Context) {
 	c.JSON(200, o)
 }
 
-func GetPosts(c *gin.Context) {
+func (this PostController) GetPosts(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
 
-	o, err := service.GetPosts(c.Query("s"), limit, offset)
+	o, err := this.postService.GetPosts(c.Query("s"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -69,10 +98,10 @@ func GetPosts(c *gin.Context) {
 	c.JSON(200, o)
 }
 
-func GetUserPosts(c *gin.Context) {
+func (this PostController) GetUserPosts(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
 
-	o, err := service.GetUserPosts(c.Param("userId"), limit, offset)
+	o, err := this.postService.GetUserPosts(c.Param("userId"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{
