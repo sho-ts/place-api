@@ -11,8 +11,8 @@ import (
 
 type IUserService interface {
 	CreateUser(i input.CreateUserInput) (entity.User, error)
-  GetMe(authId string) (entity.User, error)
-  GetUser(userId string) (entity.User, error)
+	GetMe(authId string) (entity.User, error)
+	GetUser(userId string) (entity.User, error)
 }
 
 type UserController struct {
@@ -27,8 +27,18 @@ func NewUserController(userService IUserService) UserController {
 }
 
 func (uc UserController) CreateUser(c *gin.Context) {
-	var i input.CreateUserInput
-	c.ShouldBindJSON(&i)
+	var b struct {
+		UserId    string `json:"authId"`
+		DisplayId string `json:"displayId"`
+		Name      string `json:"name"`
+	}
+	c.ShouldBindJSON(&b)
+
+	i, err := input.NewCreateUserInput(
+		b.UserId,
+		b.DisplayId,
+		b.Name,
+	)
 
 	user, err := uc.userService.CreateUser(i)
 

@@ -16,8 +16,8 @@ func NewUserService() UserService {
 func (us UserService) CreateUser(i input.CreateUserInput) (entity.User, error) {
 	user := entity.User{
 		Id:        i.UserId,
-		DisplayId: i.DisplayId,
-		Name:      i.Name,
+		DisplayId: i.DisplayId.Value,
+		Name:      i.Name.Value,
 	}
 
 	result := database.DB.Create(&user)

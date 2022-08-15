@@ -23,7 +23,7 @@ func (ps PostService) CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	post := entity.Post{
 		Id:      i.PostId,
 		UserId:  i.UserId,
-		Caption: i.Caption,
+		Caption: i.Caption.Value,
 	}
 
 	result := database.DB.Create(&post)

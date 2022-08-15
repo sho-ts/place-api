@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"mime/multipart"
+
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
@@ -8,7 +10,6 @@ import (
 	"github.com/sho-ts/place-api/dto/output"
 	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
-	"mime/multipart"
 )
 
 type IPostService interface {
@@ -46,16 +47,24 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": constant.FAILED_TO_S3_UPLOAD,
 		})
+    return
 	}
 
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-	i := input.CreatePostInput{
-		PostId:  util.GetULID(),
-		UserId:  claims["sub"].(string),
-		Caption: c.Request.FormValue("caption"),
-		Urls:    []string{path},
+	i, err := input.NewCreatePostInput(
+		util.GetULID(),
+		claims["sub"].(string),
+		c.Request.FormValue("caption"),
+		[]string{path},
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err.Error(),
+		})
+		return
 	}
 
 	_, err = pc.postService.CreatePost(i)
@@ -64,6 +73,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": constant.FAILED_TO_POST_CREATE,
 		})
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -78,6 +88,7 @@ func (pc PostController) GetPost(c *gin.Context) {
 		c.JSON(404, gin.H{
 			"message": constant.NOT_FOUND_POST,
 		})
+    return
 	}
 
 	c.JSON(200, o)

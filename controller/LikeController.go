@@ -37,10 +37,10 @@ func (lc LikeController) Like(c *gin.Context) {
 
 	c.ShouldBindJSON(&b)
 
-	i := input.HandleLikeInput{
-		PostId: b.PostId,
-		UserId: claims["sub"].(string),
-	}
+  i := input.NewHandleLikeInput(
+    b.PostId,
+    claims["sub"].(string),
+  )
 
 	d, err := lc.likeService.CheckDuplicateLike(i)
 
