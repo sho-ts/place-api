@@ -9,32 +9,31 @@ import (
 
 func GetRouter() *gin.Engine {
 	userController := controller.NewUserController(service.NewUserService())
-  postController := controller.NewPostController(service.NewPostService(), service.NewStorageService())
-  likeController := controller.NewLikeController(service.NewLikeService())
-  commentController := controller.NewCommentController(service.NewCommentService())
+	postController := controller.NewPostController(service.NewPostService(), service.NewStorageService())
+	likeController := controller.NewLikeController(service.NewLikeService())
+	commentController := controller.NewCommentController(service.NewCommentService())
 
 	r := gin.Default()
 	r.Use(middleware.GetCorsOption())
 
-	pr := r.Group("/v1")
-	ar := r.Group("/v1")
-	ar.Use(middleware.GetAuthMiddleware().MiddlewareFunc())
+	public := r.Group("/v1")
 
-	pr.POST("/user", userController.CreateUser)
-	pr.GET("/user/:userId", userController.GetUser)
-	pr.GET("/user/duplicate/:userId", userController.CheckDuplicateUser)
-	ar.GET("/user", userController.GetMe)
-	pr.GET("/user/:userId/posts", postController.GetUserPosts)
-  
-  pr.GET("/post", postController.GetPosts)
-	pr.GET("/post/:postId", postController.GetPost)
-	ar.POST("/post", postController.CreatePost)
+	public.POST("/users", userController.CreateUser)
+	public.GET("/users/:userId", userController.GetUser)
+	public.GET("/users/duplicate/:userId", userController.CheckDuplicateUser)
+	public.GET("/users/:userId/posts", postController.GetUserPosts)
+	public.GET("/posts", postController.GetPosts)
+	public.GET("/posts/:postId", postController.GetPost)
+	public.GET("/posts/:postId/like/count", likeController.GetLikeCount)
+	public.GET("/posts/:postId/comment", commentController.GetComments)
 
-	pr.GET("/post/:postId/like/count", likeController.GetLikeCount)
-	ar.PUT("/post/like", likeController.Like)
+	guard := r.Group("/v1")
+	guard.Use(middleware.GetAuthMiddleware().MiddlewareFunc())
 
-	pr.GET("/post/:postId/comment", commentController.GetComments)
-	ar.POST("/post/comment", commentController.CreateComment)
+	guard.GET("/users", userController.GetMe)
+	guard.POST("/posts", postController.CreatePost)
+	guard.PUT("/posts/like", likeController.Like)
+	guard.POST("/posts/comment", commentController.CreateComment)
 
-  return r
+	return r
 }
