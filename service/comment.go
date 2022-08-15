@@ -16,12 +16,12 @@ func NewCommentService() CommentService {
 	return commentService
 }
 
-func (this CommentService) CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
+func (cs CommentService) CreateComment(i input.CreateCommentInput) (entity.Comment, error) {
 	comment := entity.Comment{
 		Id:      i.Id,
 		UserId:  i.UserId,
 		PostId:  i.PostId,
-		Content: i.Content,
+		Content: i.Content.Value,
 	}
 
 	result := database.DB.Create(&comment)
@@ -29,7 +29,7 @@ func (this CommentService) CreateComment(i input.CreateCommentInput) (entity.Com
 	return comment, result.Error
 }
 
-func (this CommentService) GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
+func (cs CommentService) GetComments(postId string, limit int, offset int) ([]output.GetCommentOutput, error) {
 	var s []struct {
 		CommentId string
 		Content   string

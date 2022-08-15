@@ -17,7 +17,7 @@ func NewPostService() PostService {
 	return postService
 }
 
-func (this PostService) CreatePost(i input.CreatePostInput) (entity.Post, error) {
+func (ps PostService) CreatePost(i input.CreatePostInput) (entity.Post, error) {
 	tx := database.DB.Begin()
 
 	post := entity.Post{
@@ -47,7 +47,7 @@ func (this PostService) CreatePost(i input.CreatePostInput) (entity.Post, error)
 	return post, result.Error
 }
 
-func (this PostService) GetPost(postId string, userId string) (output.GetPostOutput, error) {
+func (ps PostService) GetPost(postId string, userId string) (output.GetPostOutput, error) {
 	var s struct {
 		PostId    string
 		Caption   string
@@ -120,7 +120,7 @@ func (this PostService) GetPost(postId string, userId string) (output.GetPostOut
 	return o, result.Error
 }
 
-func (this PostService) GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (ps PostService) GetPosts(search string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string
@@ -173,7 +173,7 @@ func (this PostService) GetPosts(search string, limit int, offset int) ([]output
 	return o, result.Error
 }
 
-func (this PostService) GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
+func (ps PostService) GetUserPosts(userId string, limit int, offset int) ([]output.GetPostsOutput, error) {
 	var s []struct {
 		PostId    string
 		Caption   string

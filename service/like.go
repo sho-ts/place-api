@@ -15,7 +15,7 @@ func NewLikeService () LikeService {
   return likeService
 }
 
-func (this LikeService) AddLike(i input.HandleLikeInput) error {
+func (ls LikeService) AddLike(i input.HandleLikeInput) error {
 	like := entity.Like{
 		Id:     util.GetULID(),
 		PostId: i.PostId,
@@ -27,7 +27,7 @@ func (this LikeService) AddLike(i input.HandleLikeInput) error {
 	return result.Error
 }
 
-func (this LikeService) RemoveLike(i input.HandleLikeInput) error {
+func (ls LikeService) RemoveLike(i input.HandleLikeInput) error {
 	var like entity.Like
 
 	result := database.DB.
@@ -38,7 +38,7 @@ func (this LikeService) RemoveLike(i input.HandleLikeInput) error {
 	return result.Error
 }
 
-func (this LikeService) GetLikeCount(postId string) (output.CountOutput, error) {
+func (ls LikeService) GetLikeCount(postId string) (output.CountOutput, error) {
 	var count int64
 
 	result := database.DB.
@@ -53,7 +53,7 @@ func (this LikeService) GetLikeCount(postId string) (output.CountOutput, error) 
 	return o, result.Error
 }
 
-func (this LikeService) CheckDuplicateLike(i input.HandleLikeInput) (bool, error) {
+func (ls LikeService) CheckDuplicateLike(i input.HandleLikeInput) (bool, error) {
 	var count int64
 
 	result := database.DB.

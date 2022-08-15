@@ -17,7 +17,7 @@ func NewStorageService() StorageService {
 	return storageService
 }
 
-func (this StorageService) UploadToS3Bucket(file multipart.File, name string) (string, error) {
+func (ss StorageService) UploadToS3Bucket(file multipart.File, name string) (string, error) {
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(os.Getenv("AWS_S3_REGION")),
 		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_S3_ACCESS_KEY"), os.Getenv("AWS_S3_SECRET_KEY"), ""),

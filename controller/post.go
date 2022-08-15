@@ -38,9 +38,9 @@ func NewPostController(
 	return postController
 }
 
-func (this PostController) CreatePost(c *gin.Context) {
+func (pc PostController) CreatePost(c *gin.Context) {
 	file, header, _ := c.Request.FormFile("attachmentFile")
-	path, err := this.storageService.UploadToS3Bucket(file, header.Filename)
+	path, err := pc.storageService.UploadToS3Bucket(file, header.Filename)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -58,7 +58,7 @@ func (this PostController) CreatePost(c *gin.Context) {
 		Urls:    []string{path},
 	}
 
-	_, err = this.postService.CreatePost(i)
+	_, err = pc.postService.CreatePost(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -71,8 +71,8 @@ func (this PostController) CreatePost(c *gin.Context) {
 	})
 }
 
-func (this PostController) GetPost(c *gin.Context) {
-	o, err := this.postService.GetPost(c.Param("postId"), c.Query("userId"))
+func (pc PostController) GetPost(c *gin.Context) {
+	o, err := pc.postService.GetPost(c.Param("postId"), c.Query("userId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -83,10 +83,10 @@ func (this PostController) GetPost(c *gin.Context) {
 	c.JSON(200, o)
 }
 
-func (this PostController) GetPosts(c *gin.Context) {
+func (pc PostController) GetPosts(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
 
-	o, err := this.postService.GetPosts(c.Query("s"), limit, offset)
+	o, err := pc.postService.GetPosts(c.Query("s"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -98,10 +98,10 @@ func (this PostController) GetPosts(c *gin.Context) {
 	c.JSON(200, o)
 }
 
-func (this PostController) GetUserPosts(c *gin.Context) {
+func (pc PostController) GetUserPosts(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
 
-	o, err := this.postService.GetUserPosts(c.Param("userId"), limit, offset)
+	o, err := pc.postService.GetUserPosts(c.Param("userId"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{

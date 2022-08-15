@@ -26,11 +26,11 @@ func NewUserController(userService IUserService) UserController {
 	return userController
 }
 
-func (this UserController) CreateUser(c *gin.Context) {
+func (uc UserController) CreateUser(c *gin.Context) {
 	var i input.CreateUserInput
 	c.ShouldBindJSON(&i)
 
-	user, err := this.userService.CreateUser(i)
+	user, err := uc.userService.CreateUser(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -42,11 +42,11 @@ func (this UserController) CreateUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-func (this UserController) GetMe(c *gin.Context) {
+func (uc UserController) GetMe(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-	user, err := this.userService.GetMe(claims["sub"].(string))
+	user, err := uc.userService.GetMe(claims["sub"].(string))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -58,8 +58,8 @@ func (this UserController) GetMe(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-func (this UserController) GetUser(c *gin.Context) {
-	user, err := this.userService.GetUser(c.Param("userId"))
+func (uc UserController) GetUser(c *gin.Context) {
+	user, err := uc.userService.GetUser(c.Param("userId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -72,8 +72,8 @@ func (this UserController) GetUser(c *gin.Context) {
 }
 
 /* ユーザーの重複を確認する */
-func (this UserController) CheckDuplicateUser(c *gin.Context) {
-	_, err := this.userService.GetUser(c.Param("userId"))
+func (uc UserController) CheckDuplicateUser(c *gin.Context) {
+	_, err := uc.userService.GetUser(c.Param("userId"))
 
 	if err != nil {
 		c.JSON(200, gin.H{

@@ -13,7 +13,7 @@ func NewUserService() UserService {
 	return userService
 }
 
-func (this UserService) CreateUser(i input.CreateUserInput) (entity.User, error) {
+func (us UserService) CreateUser(i input.CreateUserInput) (entity.User, error) {
 	user := entity.User{
 		Id:        i.UserId,
 		DisplayId: i.DisplayId,
@@ -25,7 +25,7 @@ func (this UserService) CreateUser(i input.CreateUserInput) (entity.User, error)
 	return user, result.Error
 }
 
-func (this UserService) GetMe(authId string) (entity.User, error) {
+func (us UserService) GetMe(authId string) (entity.User, error) {
 	var user entity.User
 
 	result := database.DB.Where("id = ?", authId).First(&user)
@@ -33,7 +33,7 @@ func (this UserService) GetMe(authId string) (entity.User, error) {
 	return user, result.Error
 }
 
-func (this UserService) GetUser(userId string) (entity.User, error) {
+func (us UserService) GetUser(userId string) (entity.User, error) {
 	var user entity.User
 
 	result := database.DB.Where("display_id = ?", userId).First(&user)

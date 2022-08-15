@@ -27,7 +27,7 @@ func NewLikeController(likeService ILikeService) LikeController {
 	return likeController
 }
 
-func (this LikeController) Like(c *gin.Context) {
+func (lc LikeController) Like(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
@@ -42,7 +42,7 @@ func (this LikeController) Like(c *gin.Context) {
 		UserId: claims["sub"].(string),
 	}
 
-	d, err := this.likeService.CheckDuplicateLike(i)
+	d, err := lc.likeService.CheckDuplicateLike(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -52,9 +52,9 @@ func (this LikeController) Like(c *gin.Context) {
 	}
 
 	if !d {
-		err = this.likeService.AddLike(i)
+		err = lc.likeService.AddLike(i)
 	} else {
-		err = this.likeService.RemoveLike(i)
+		err = lc.likeService.RemoveLike(i)
 	}
 
 	if err != nil {
@@ -69,8 +69,8 @@ func (this LikeController) Like(c *gin.Context) {
 	})
 }
 
-func (this LikeController) GetLikeCount(c *gin.Context) {
-	o, err := this.likeService.GetLikeCount(c.Param("postId"))
+func (lc LikeController) GetLikeCount(c *gin.Context) {
+	o, err := lc.likeService.GetLikeCount(c.Param("postId"))
 
 	if err != nil {
 		c.JSON(404, gin.H{

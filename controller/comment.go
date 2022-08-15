@@ -26,7 +26,7 @@ func NewCommentController(commentService ICommentService) CommentController {
 	return commentController
 }
 
-func (this CommentController) CreateComment(c *gin.Context) {
+func (cc CommentController) CreateComment(c *gin.Context) {
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
@@ -37,14 +37,16 @@ func (this CommentController) CreateComment(c *gin.Context) {
 
 	c.ShouldBindJSON(&r)
 
-	i := input.CreateCommentInput{
-		Id:      util.GetULID(),
-		UserId:  claims["sub"].(string),
-		PostId:  r.PostId,
-		Content: r.Content,
+	i, err := input.NewCreateCommentInput(util.GetULID(), claims["sub"].(string), r.PostId, r.Content)
+
+  if err != nil {
+		c.JSON(500, gin.H{
+			"message": err.Error(),
+		})
+		return
 	}
 
-	comment, err := this.commentService.CreateComment(i)
+	comment, err := cc.commentService.CreateComment(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -56,9 +58,9 @@ func (this CommentController) CreateComment(c *gin.Context) {
 	c.JSON(200, comment)
 }
 
-func (this CommentController) GetComments(c *gin.Context) {
+func (cc CommentController) GetComments(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
-	o, err := this.commentService.GetComments(c.Param("postId"), limit, offset)
+	o, err := cc.commentService.GetComments(c.Param("postId"), limit, offset)
 
 	if err != nil {
 		c.JSON(404, gin.H{
