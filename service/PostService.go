@@ -89,7 +89,6 @@ func (ps PostService) GetPost(postId string, userId string) (output.GetPostOutpu
 	// ------------------------
 
 	result := database.DB.
-		Debug().
 		Table("posts").
 		Select(sel).
 		Joins(sj, sub).
