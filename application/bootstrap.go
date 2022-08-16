@@ -27,4 +27,5 @@ var PostController = controller.NewPostController(
 )
 var CommentController = controller.NewCommentController(
 	ic.NewCreateCommentInterapter(commentRepository),
+  ic.NewFindAllInterapter(commentRepository),
 )

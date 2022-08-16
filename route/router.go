@@ -10,7 +10,6 @@ import (
 
 func GetRouter() *gin.Engine {
 	likeController := controller.NewLikeController(service.NewLikeService())
-	commentController := controller.NewCommentController(service.NewCommentService())
 
 	r := gin.Default()
 	r.Use(middleware.GetCorsOption())
@@ -23,7 +22,7 @@ func GetRouter() *gin.Engine {
 	public.GET("/posts", app.PostController.FindAll)
 	public.GET("/posts/:postId", app.PostController.FindById)
 	public.GET("/posts/:postId/like/count", likeController.GetLikeCount)
-	public.GET("/posts/:postId/comment", commentController.GetComments)
+	public.GET("/posts/:postId/comment", app.CommentController.FindAll)
   
 	guard := r.Group("/v1")
 	guard.Use(middleware.GetAuthMiddleware().MiddlewareFunc())
@@ -31,7 +30,7 @@ func GetRouter() *gin.Engine {
 	guard.POST("/posts", app.PostController.CreatePost)
 	guard.GET("/users", app.UserController.GetMe)
 	guard.PUT("/posts/like", likeController.Like)
-	guard.POST("/posts/comment", app.CommentController.CreateComment)
+	guard.POST("/posts/:postId/comment", app.CommentController.CreateComment)
 
 	return r
 }

@@ -6,4 +6,5 @@ import (
 
 type ICommentRepository interface {
 	Store(comment entity.Comment) error
+	FindAll(postId string, limit int, offset int) ([]entity.Comment, error)
 }
