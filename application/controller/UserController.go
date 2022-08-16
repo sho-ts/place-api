@@ -42,6 +42,7 @@ func (controller UserController) CreateUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "duplicate",
 		})
+    return
 	}
 
 	createUserInput := input.NewCreateUserInput(
@@ -56,6 +57,7 @@ func (controller UserController) CreateUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
+    return
 	}
 
 	c.JSON(200, user)
@@ -73,6 +75,7 @@ func (controller UserController) GetMe(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
+    return
 	}
 
 	c.JSON(200, user)
@@ -87,6 +90,7 @@ func (controller UserController) GetUser(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
+    return
 	}
 
 	c.JSON(200, user)
