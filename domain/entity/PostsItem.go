@@ -1,8 +1,6 @@
 package entity
 
-
 import (
-	"github.com/sho-ts/place-api/entity"
 	"time"
 )
 
@@ -11,7 +9,7 @@ type PostsItem struct {
 	Caption   string      `json:"caption"`
 	CreatedAt time.Time   `json:"createdAt"`
 	Thumbnail string      `json:"thumbnail"`
-	User      entity.User `json:"user"`
+	User      User `json:"user"`
 }
 
 func NewPostsItem(
@@ -19,7 +17,7 @@ func NewPostsItem(
 	caption string,
 	createdAt time.Time,
 	thumbnail string,
-	user entity.User,
+	user User,
 ) PostsItem {
 	return PostsItem{
 		PostId:    postId,

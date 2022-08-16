@@ -9,7 +9,6 @@ import (
 )
 
 func GetRouter() *gin.Engine {
-	postController := controller.NewPostController(service.NewPostService(), service.NewStorageService())
 	likeController := controller.NewLikeController(service.NewLikeService())
 	commentController := controller.NewCommentController(service.NewCommentService())
 
@@ -21,8 +20,7 @@ func GetRouter() *gin.Engine {
 	public.POST("/users", app.UserController.CreateUser)
 	public.GET("/users/:displayId", app.UserController.GetUser)
   
-	public.GET("/users/:displayId/posts", postController.GetUserPosts)
-	public.GET("/posts", postController.GetPosts)
+	public.GET("/posts", app.PostController.FindAll)
 	public.GET("/posts/:postId", app.PostController.FindById)
 	public.GET("/posts/:postId/like/count", likeController.GetLikeCount)
 	public.GET("/posts/:postId/comment", commentController.GetComments)

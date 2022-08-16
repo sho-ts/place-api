@@ -10,16 +10,19 @@ import (
 
 type PostController struct {
 	CreatePostUseCase usecase.ICreatePostUseCase
-  FindByIdUseCase usecase.IFindByIdUseCase
+	FindByIdUseCase   usecase.IFindByIdUseCase
+	FindAllUseCase   usecase.IFindAllUseCase
 }
 
 func NewPostController(
 	createPostUseCase usecase.ICreatePostUseCase,
-  findByIdUseCase usecase.IFindByIdUseCase,
+	findByIdUseCase usecase.IFindByIdUseCase,
+	findAllUseCase usecase.IFindAllUseCase,
 ) PostController {
 	return PostController{
 		CreatePostUseCase: createPostUseCase,
-    FindByIdUseCase: findByIdUseCase,
+		FindByIdUseCase:   findByIdUseCase,
+		FindAllUseCase:   findAllUseCase,
 	}
 }
 
@@ -42,7 +45,7 @@ func (controller PostController) CreatePost(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
-    return
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -51,19 +54,40 @@ func (controller PostController) CreatePost(c *gin.Context) {
 }
 
 func (controller PostController) FindById(c *gin.Context) {
-  i := input.NewFindByIdInput(
-    c.Param("postId"),
-    c.Query("userId"),
-  )
+	i := input.NewFindByIdInput(
+		c.Param("postId"),
+		c.Query("userId"),
+	)
 
-  post, err := controller.FindByIdUseCase.Handle(i)
+	post, err := controller.FindByIdUseCase.Handle(i)
 
-  if err != nil {
-    c.JSON(500, gin.H{
+	if err != nil {
+		c.JSON(500, gin.H{
 			"message": "Error",
 		})
-    return
-  }
+		return
+	}
 
-  c.JSON(200, post)
+	c.JSON(200, post)
+}
+
+func (controller PostController) FindAll(c *gin.Context) {
+	limit, offset := util.GetLimitAndOffset(c)
+
+	i := input.NewFindAllInput(
+		c.Query("userId"),
+		limit,
+		offset,
+	)
+
+	posts, err := controller.FindAllUseCase.Handle(i)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "Error",
+		})
+		return
+	}
+
+	c.JSON(200, posts)
 }
