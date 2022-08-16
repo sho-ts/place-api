@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/sho-ts/place-api/entity"
+  "github.com/sho-ts/place-api/infrastructure/database/table"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"os"
@@ -22,10 +22,10 @@ func Connect() {
 
 func Migrate() {
 	DB.AutoMigrate(
-		&entity.User{},
-		&entity.Post{},
-		&entity.Comment{},
-		&entity.Like{},
-		&entity.Storage{},
+		&table.User{},
+		&table.Post{},
+		&table.Comment{},
+		&table.Like{},
+		&table.Storage{},
 	)
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/joho/godotenv"
-	"github.com/sho-ts/place-api/database"
+	"github.com/sho-ts/place-api/infrastructure/database"
 	"github.com/sho-ts/place-api/route"
 )
 

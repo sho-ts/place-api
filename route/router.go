@@ -20,18 +20,18 @@ func GetRouter() *gin.Engine {
 
 	public.POST("/users", app.UserController.CreateUser)
 	public.GET("/users/:displayId", app.UserController.GetUser)
-
-	public.GET("/users/:userId/posts", postController.GetUserPosts)
+  
+	public.GET("/users/:displayId/posts", postController.GetUserPosts)
 	public.GET("/posts", postController.GetPosts)
 	public.GET("/posts/:postId", postController.GetPost)
 	public.GET("/posts/:postId/like/count", likeController.GetLikeCount)
 	public.GET("/posts/:postId/comment", commentController.GetComments)
-
+  
 	guard := r.Group("/v1")
 	guard.Use(middleware.GetAuthMiddleware().MiddlewareFunc())
-
+  
+	guard.POST("/posts", app.PostController.CreatePost)
 	guard.GET("/users", app.UserController.GetMe)
-	guard.POST("/posts", postController.CreatePost)
 	guard.PUT("/posts/like", likeController.Like)
 	guard.POST("/posts/comment", commentController.CreateComment)
 
