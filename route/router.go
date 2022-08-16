@@ -2,13 +2,13 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
+	app "github.com/sho-ts/place-api/application"
 	"github.com/sho-ts/place-api/controller"
 	"github.com/sho-ts/place-api/route/middleware"
 	"github.com/sho-ts/place-api/service"
 )
 
 func GetRouter() *gin.Engine {
-	userController := controller.NewUserController(service.NewUserService())
 	postController := controller.NewPostController(service.NewPostService(), service.NewStorageService())
 	likeController := controller.NewLikeController(service.NewLikeService())
 	commentController := controller.NewCommentController(service.NewCommentService())
@@ -18,9 +18,9 @@ func GetRouter() *gin.Engine {
 
 	public := r.Group("/v1")
 
-	public.POST("/users", userController.CreateUser)
-	public.GET("/users/:userId", userController.GetUser)
-	public.GET("/users/duplicate/:userId", userController.CheckDuplicateUser)
+	public.POST("/users", app.UserController.CreateUser)
+	public.GET("/users/:displayId", app.UserController.GetUser)
+
 	public.GET("/users/:userId/posts", postController.GetUserPosts)
 	public.GET("/posts", postController.GetPosts)
 	public.GET("/posts/:postId", postController.GetPost)
@@ -30,7 +30,7 @@ func GetRouter() *gin.Engine {
 	guard := r.Group("/v1")
 	guard.Use(middleware.GetAuthMiddleware().MiddlewareFunc())
 
-	guard.GET("/users", userController.GetMe)
+	guard.GET("/users", app.UserController.GetMe)
 	guard.POST("/posts", postController.CreatePost)
 	guard.PUT("/posts/like", likeController.Like)
 	guard.POST("/posts/comment", commentController.CreateComment)
