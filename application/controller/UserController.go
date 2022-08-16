@@ -3,13 +3,13 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt"
-	"github.com/sho-ts/place-api/domain/dto/input"
-	usecase "github.com/sho-ts/place-api/usecase/user"
+	"github.com/sho-ts/place-api/domain/dto/input/user"
+	"github.com/sho-ts/place-api/usecase/user"
 	"github.com/sho-ts/place-api/util"
 )
 
 type UserController struct {
-	userCreateUseCase     usecase.ICreateUserUseCase
+	userCreateUseCase      usecase.ICreateUserUseCase
 	FindByIdUseCase        usecase.IFindByIdUseCase
 	FindByDisplayIdUseCase usecase.IFindByDisplayIdUseCase
 }
@@ -20,7 +20,7 @@ func NewUserController(
 	FindByDisplayIdUseCase usecase.IFindByDisplayIdUseCase,
 ) UserController {
 	return UserController{
-		userCreateUseCase:     createUserUseCase,
+		userCreateUseCase:      createUserUseCase,
 		FindByIdUseCase:        FindByIdUseCase,
 		FindByDisplayIdUseCase: FindByDisplayIdUseCase,
 	}
