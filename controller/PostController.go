@@ -4,17 +4,12 @@ import (
 	"mime/multipart"
 
 	"github.com/gin-gonic/gin"
-	jwtgo "github.com/golang-jwt/jwt"
 	"github.com/sho-ts/place-api/constant"
-	"github.com/sho-ts/place-api/dto/input"
 	"github.com/sho-ts/place-api/dto/output"
-	"github.com/sho-ts/place-api/entity"
 	"github.com/sho-ts/place-api/util"
 )
 
 type IPostService interface {
-	CreatePost(i input.CreatePostInput) (entity.Post, error)
-	GetPost(postId string, userId string) (output.GetPostOutput, error)
 	GetPosts(search string, limit int, offset int) (output.GetPostsOutput, error)
 	GetUserPosts(userId string, limit int, offset int) (output.GetPostsOutput, error)
 }
@@ -37,61 +32,6 @@ func NewPostController(
 		storageService: storageService,
 	}
 	return postController
-}
-
-func (pc PostController) CreatePost(c *gin.Context) {
-	file, header, _ := c.Request.FormFile("attachmentFile")
-	path, err := pc.storageService.UploadToS3Bucket(file, header.Filename)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": constant.FAILED_TO_S3_UPLOAD,
-		})
-    return
-	}
-
-	token := util.GetAuthResult(c)
-	claims := token.Claims.(jwtgo.MapClaims)
-
-	i, err := input.NewCreatePostInput(
-		util.GetULID(),
-		claims["sub"].(string),
-		c.Request.FormValue("caption"),
-		[]string{path},
-	)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-
-	_, err = pc.postService.CreatePost(i)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": constant.FAILED_TO_POST_CREATE,
-		})
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"message": "success",
-	})
-}
-
-func (pc PostController) GetPost(c *gin.Context) {
-	o, err := pc.postService.GetPost(c.Param("postId"), c.Query("userId"))
-
-	if err != nil {
-		c.JSON(404, gin.H{
-			"message": constant.NOT_FOUND_POST,
-		})
-    return
-	}
-
-	c.JSON(200, o)
 }
 
 func (pc PostController) GetPosts(c *gin.Context) {
