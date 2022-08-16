@@ -23,7 +23,7 @@ func GetRouter() *gin.Engine {
   
 	public.GET("/users/:displayId/posts", postController.GetUserPosts)
 	public.GET("/posts", postController.GetPosts)
-	public.GET("/posts/:postId", postController.GetPost)
+	public.GET("/posts/:postId", app.PostController.FindById)
 	public.GET("/posts/:postId/like/count", likeController.GetLikeCount)
 	public.GET("/posts/:postId/comment", commentController.GetComments)
   

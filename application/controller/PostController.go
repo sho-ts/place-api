@@ -10,13 +10,16 @@ import (
 
 type PostController struct {
 	CreatePostUseCase usecase.ICreatePostUseCase
+  FindByIdUseCase usecase.IFindByIdUseCase
 }
 
 func NewPostController(
 	createPostUseCase usecase.ICreatePostUseCase,
+  findByIdUseCase usecase.IFindByIdUseCase,
 ) PostController {
 	return PostController{
 		CreatePostUseCase: createPostUseCase,
+    FindByIdUseCase: findByIdUseCase,
 	}
 }
 
@@ -39,9 +42,28 @@ func (controller PostController) CreatePost(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
+    return
 	}
 
 	c.JSON(200, gin.H{
 		"message": "success",
 	})
+}
+
+func (controller PostController) FindById(c *gin.Context) {
+  i := input.NewFindByIdInput(
+    c.Param("postId"),
+    c.Query("userId"),
+  )
+
+  post, err := controller.FindByIdUseCase.Handle(i)
+
+  if err != nil {
+    c.JSON(500, gin.H{
+			"message": "Error",
+		})
+    return
+  }
+
+  c.JSON(200, post)
 }

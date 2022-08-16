@@ -20,4 +20,5 @@ var UserController = controller.NewUserController(
 )
 var PostController = controller.NewPostController(
 	ip.NewCreatePostInterapter(postRepository, storageRepository),
+  ip.NewFindByIdInterapter(postRepository),
 )
