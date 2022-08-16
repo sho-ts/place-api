@@ -7,9 +7,7 @@ type FindByDisplayIdInput struct {
 func NewFindByDisplayIdInput(
 	displayId string,
 ) FindByDisplayIdInput {
-	createUserInput := FindByDisplayIdInput{
+	return FindByDisplayIdInput{
 		DisplayId: displayId,
 	}
-
-	return createUserInput
 }

@@ -7,9 +7,7 @@ type FindByIdInput struct {
 func NewFindByIdInput(
 	id string,
 ) FindByIdInput {
-	createUserInput := FindByIdInput{
+	return FindByIdInput{
 		Id: id,
 	}
-
-	return createUserInput
 }
