@@ -1,10 +1,10 @@
 package interapter
 
 import (
-	"github.com/sho-ts/place-api/domain/dto/input/post"
+	"github.com/sho-ts/place-api/application/util"
+	input "github.com/sho-ts/place-api/domain/dto/input/post"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/domain/repository"
-	"github.com/sho-ts/place-api/util"
 )
 
 type CreatePostInterapter struct {

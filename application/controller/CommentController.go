@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt"
-	"github.com/sho-ts/place-api/domain/dto/input/comment"
-	"github.com/sho-ts/place-api/usecase/comment"
-	"github.com/sho-ts/place-api/util"
+	"github.com/sho-ts/place-api/application/util"
+	input "github.com/sho-ts/place-api/domain/dto/input/comment"
+	usecase "github.com/sho-ts/place-api/usecase/comment"
 )
 
 type CommentController struct {

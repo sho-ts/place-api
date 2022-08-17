@@ -4,10 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sho-ts/place-api/application/util"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/infrastructure/database"
 	"github.com/sho-ts/place-api/infrastructure/database/table"
-	"github.com/sho-ts/place-api/util"
 	"gorm.io/gorm"
 )
 

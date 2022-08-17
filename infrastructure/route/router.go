@@ -3,7 +3,7 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	app "github.com/sho-ts/place-api/application"
-	"github.com/sho-ts/place-api/route/middleware"
+	"github.com/sho-ts/place-api/infrastructure/route/middleware"
 )
 
 func GetRouter() *gin.Engine {
