@@ -2,7 +2,7 @@ package interapter
 
 import (
 	"github.com/sho-ts/place-api/domain/dto/input/comment"
-	"github.com/sho-ts/place-api/domain/entity"
+	"github.com/sho-ts/place-api/domain/dto/output/comment"
 	"github.com/sho-ts/place-api/domain/repository"
 )
 
@@ -18,8 +18,14 @@ func NewFindAllInterapter(
 	}
 }
 
-func (interapter FindAllInterapter) Handle(i input.FindAllInput) ([]entity.Comment, error) {
+func (interapter FindAllInterapter) Handle(i input.FindAllInput) (output.FindAllOutput, error) {
 	comments, err := interapter.CommentRepository.FindAll(i.PostId, i.Limit, i.Offset)
+	count, err := interapter.CommentRepository.GetTotalCount(i.PostId)
 
-	return comments, err
+	o := output.NewFindAllOutput(
+		comments,
+		count,
+	)
+
+	return o, err
 }

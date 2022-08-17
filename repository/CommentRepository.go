@@ -78,3 +78,14 @@ func (repository CommentRepository) FindAll(postId string, limit int, offset int
 
 	return items, result.Error
 }
+
+func (repository CommentRepository) GetTotalCount(postId string) (int64, error) {
+	var count int64
+
+	result := database.DB.
+		Table("comments").
+		Where("comments.post_id = ?", postId).
+		Scan(&count)
+
+	return count, result.Error
+}

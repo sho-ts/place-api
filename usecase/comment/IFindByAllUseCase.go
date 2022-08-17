@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"github.com/sho-ts/place-api/domain/dto/input/comment"
-	"github.com/sho-ts/place-api/domain/entity"
+	"github.com/sho-ts/place-api/domain/dto/output/comment"
 )
 
 type IFindAllUseCase interface {
-	Handle(i input.FindAllInput) ([]entity.Comment, error)
+	Handle(i input.FindAllInput) (output.FindAllOutput, error)
 }

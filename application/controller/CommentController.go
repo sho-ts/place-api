@@ -63,7 +63,7 @@ func (controller CommentController) FindAll(c *gin.Context) {
 		offset,
 	)
 
-	comments, err := controller.FindAllUseCase.Handle(i)
+	o, err := controller.FindAllUseCase.Handle(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -72,5 +72,5 @@ func (controller CommentController) FindAll(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, comments)
+	c.JSON(200, o)
 }
