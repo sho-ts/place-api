@@ -1,15 +1,15 @@
 package input
 
-type HandleLikeInput struct {
+type ToggleLikeInput struct {
 	PostId string
 	UserId string
 }
 
-func NewHandleLikeInput(
+func NewToggleLikeInput(
 	postId string,
 	userId string,
-) HandleLikeInput {
-	return HandleLikeInput{
+) ToggleLikeInput {
+	return ToggleLikeInput{
 		PostId: postId,
 		UserId: userId,
 	}
