@@ -39,6 +39,7 @@ func (repository LikeRepository) CheckDuplicate(postId string, userId string) (
 	var count int64
 
 	result := database.DB.
+    Table("likes").
 		Where("post_id = ?", postId).
 		Where("user_id = ?", userId).
 		Count(&count)
