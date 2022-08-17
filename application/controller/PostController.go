@@ -80,7 +80,7 @@ func (controller PostController) FindAll(c *gin.Context) {
 		offset,
 	)
 
-	posts, err := controller.FindAllUseCase.Handle(i)
+	o, err := controller.FindAllUseCase.Handle(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -89,5 +89,5 @@ func (controller PostController) FindAll(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, posts)
+	c.JSON(200, o)
 }

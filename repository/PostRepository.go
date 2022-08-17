@@ -139,8 +139,9 @@ func (repository PostRepository) FindAll(userId string, limit int, offset int) (
 	// 投稿に複数の画像があった場合の重複除外
 	sub := "select id from storages s where s.post_id = posts.id limit 1"
 
+	var result *gorm.DB
+
 	base := database.DB.
-		Debug().
 		Table("posts").
 		Select(strings.Join([]string{
 			"posts.id as PostId",
@@ -155,12 +156,8 @@ func (repository PostRepository) FindAll(userId string, limit int, offset int) (
 		Joins("join storages on storages.id = (" + sub + ")").
 		Joins("join users on users.id = posts.user_id")
 
-	var result *gorm.DB
-
-  // 特定のユーザーを指定するかどうか
 	if userId != "" {
-		result = base.
-			Where("posts.user_id = (select id from users where display_id = ?)", userId).
+		result = base.Where("posts.user_id = (select id from users where display_id = ?)", userId).
 			Order("posts.created_at desc").
 			Limit(limit).
 			Offset(offset).
@@ -180,14 +177,32 @@ func (repository PostRepository) FindAll(userId string, limit int, offset int) (
 			Caption:   postsResult[index].Caption,
 			CreatedAt: postsResult[index].CreatedAt,
 			Thumbnail: postsResult[index].Thumbnail,
-			User:      entity.User{
-        Id: postsResult[index].UserId,
-        DisplayId: postsResult[index].DisplayId,
-        Name: postsResult[index].Name,
-        Avatar: postsResult[index].Avatar,
-      },
+			User: entity.User{
+				Id:        postsResult[index].UserId,
+				DisplayId: postsResult[index].DisplayId,
+				Name:      postsResult[index].Name,
+				Avatar:    postsResult[index].Avatar,
+			},
 		}
 	}
 
 	return items, result.Error
+}
+
+func (repository PostRepository) GetTotalCount(userId string) (int64, error) {
+	var count int64
+	var result *gorm.DB
+
+	if userId != "" {
+		result = database.DB.
+			Table("posts").
+			Where("posts.user_id = (select id from users where display_id = ?)", userId).
+			Count(&count)
+	} else {
+		result = database.DB.
+			Table("posts").
+			Count(&count)
+	}
+
+	return count, result.Error
 }
