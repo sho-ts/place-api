@@ -85,7 +85,7 @@ func (repository CommentRepository) GetTotalCount(postId string) (int64, error) 
 	result := database.DB.
 		Table("comments").
 		Where("comments.post_id = ?", postId).
-		Scan(&count)
+		Count(&count)
 
 	return count, result.Error
 }
