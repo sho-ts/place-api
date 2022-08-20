@@ -25,7 +25,7 @@ func (repository UserRepository) FindById(userId string) (entity.User, error) {
 		Table("users").
 		Select(strings.Join([]string{
 			"id as Id",
-			"displayId as DisplayId",
+			"display_id as DisplayId",
 			"name as Name",
 			"avatar as Avatar",
 		}, ",")).
