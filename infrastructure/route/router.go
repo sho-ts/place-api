@@ -24,6 +24,7 @@ func GetRouter() *gin.Engine {
 
 	guard.POST("/posts", app.PostController.CreatePost)
 	guard.GET("/users", app.UserController.GetMe)
+	guard.PUT("/users", app.UserController.ChangeProfile)
 	guard.PUT("/posts/:postId/like", app.LikeController.ToggleLike)
 	guard.POST("/posts/:postId/comments", app.CommentController.CreateComment)
 

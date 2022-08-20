@@ -21,6 +21,7 @@ var UserController = controller.NewUserController(
 	iu.NewUserCreateInterapter(userRepository),
 	iu.NewFindByIdInterapter(userRepository),
 	iu.NewFindByDisplayIdInterapter(userRepository),
+  iu.NewChangeProfileInterapter(userRepository, storageRepository),
 )
 var PostController = controller.NewPostController(
 	ip.NewCreatePostInterapter(postRepository, storageRepository),

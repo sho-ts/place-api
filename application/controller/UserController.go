@@ -9,20 +9,23 @@ import (
 )
 
 type UserController struct {
-	userCreateUseCase      usecase.ICreateUserUseCase
-	FindByIdUseCase        usecase.IFindByIdUseCase
-	FindByDisplayIdUseCase usecase.IFindByDisplayIdUseCase
+	createUserUseCase      usecase.ICreateUserUseCase
+	findByIdUseCase        usecase.IFindByIdUseCase
+	findByDisplayIdUseCase usecase.IFindByDisplayIdUseCase
+	changeProfileUseCase   usecase.IChangeProfileUseCase
 }
 
 func NewUserController(
 	createUserUseCase usecase.ICreateUserUseCase,
-	FindByIdUseCase usecase.IFindByIdUseCase,
-	FindByDisplayIdUseCase usecase.IFindByDisplayIdUseCase,
+	findByIdUseCase usecase.IFindByIdUseCase,
+	findByDisplayIdUseCase usecase.IFindByDisplayIdUseCase,
+	changeProfileUseCase usecase.IChangeProfileUseCase,
 ) UserController {
 	return UserController{
-		userCreateUseCase:      createUserUseCase,
-		FindByIdUseCase:        FindByIdUseCase,
-		FindByDisplayIdUseCase: FindByDisplayIdUseCase,
+		createUserUseCase:      createUserUseCase,
+		findByIdUseCase:        findByIdUseCase,
+		findByDisplayIdUseCase: findByDisplayIdUseCase,
+		changeProfileUseCase:   changeProfileUseCase,
 	}
 }
 
@@ -36,13 +39,13 @@ func (controller UserController) CreateUser(c *gin.Context) {
 
 	FindByDisplayIdInput := input.NewFindByDisplayIdInput(requestBody.DisplayId)
 
-	duplicate, _ := controller.FindByDisplayIdUseCase.Handle(FindByDisplayIdInput)
+	duplicate, _ := controller.findByDisplayIdUseCase.Handle(FindByDisplayIdInput)
 
 	if duplicate.Id != "" {
 		c.JSON(500, gin.H{
 			"message": "duplicate",
 		})
-    return
+		return
 	}
 
 	createUserInput := input.NewCreateUserInput(
@@ -51,13 +54,13 @@ func (controller UserController) CreateUser(c *gin.Context) {
 		requestBody.Name,
 	)
 
-	user, err := controller.userCreateUseCase.Handle(createUserInput)
+	user, err := controller.createUserUseCase.Handle(createUserInput)
 
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
-    return
+		return
 	}
 
 	c.JSON(200, user)
@@ -69,13 +72,13 @@ func (controller UserController) GetMe(c *gin.Context) {
 
 	i := input.NewFindByIdInput(claims["sub"].(string))
 
-	user, err := controller.FindByIdUseCase.Handle(i)
+	user, err := controller.findByIdUseCase.Handle(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
-    return
+		return
 	}
 
 	c.JSON(200, user)
@@ -84,13 +87,44 @@ func (controller UserController) GetMe(c *gin.Context) {
 func (controller UserController) GetUser(c *gin.Context) {
 	i := input.NewFindByDisplayIdInput(c.Param("displayId"))
 
-	user, err := controller.FindByDisplayIdUseCase.Handle(i)
+	user, err := controller.findByDisplayIdUseCase.Handle(i)
 
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Error",
 		})
-    return
+		return
+	}
+
+	c.JSON(200, user)
+}
+
+func (controller UserController) ChangeProfile(c *gin.Context) {
+  var fileName string
+	token := util.GetAuthResult(c)
+	claims := token.Claims.(jwtgo.MapClaims)
+
+	file, header, _ := c.Request.FormFile("attachmentFile")
+
+  if header != nil {
+    fileName = header.Filename
+  }
+
+	i := input.NewChangeProfileInput(
+		claims["sub"].(string),
+		c.Request.FormValue("displayId"),
+		c.Request.FormValue("name"),
+		file,
+		fileName,
+	)
+
+	user, err := controller.changeProfileUseCase.Handle(i)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "Error",
+		})
+		return
 	}
 
 	c.JSON(200, user)

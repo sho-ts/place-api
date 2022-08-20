@@ -51,3 +51,9 @@ func (repository UserRepository) FindByDisplayId(displayId string) (entity.User,
 
 	return user, result.Error
 }
+
+func (repository UserRepository) ChangeProfile(user entity.User) (entity.User, error) {
+	result := database.DB.Save(user)
+  
+	return user, result.Error
+}
