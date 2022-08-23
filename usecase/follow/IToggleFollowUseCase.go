@@ -4,6 +4,6 @@ import (
 	"github.com/sho-ts/place-api/domain/dto/input/follow"
 )
 
-type IToggleLikeUseCase interface {
+type IToggleFollowUseCase interface {
   Handle(i input.ToggleFollowInput) error
 }
