@@ -20,6 +20,10 @@ func NewToggleLikeInterapter(
 func (interapter ToggleLikeInterapter) Handle(i input.ToggleLikeInput) error {
 	duplicate, err := interapter.LikeRepository.CheckDuplicate(i.PostId, i.UserId)
 
+  if err != nil {
+    return err
+  }
+
 	if duplicate {
 		err = interapter.LikeRepository.Remove(i.PostId, i.UserId)
 	} else {
