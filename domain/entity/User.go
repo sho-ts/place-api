@@ -1,8 +1,8 @@
 package entity
 
 type User struct {
-	Id        string `json:"-"`
-	DisplayId string `json:"userId"`
+	Id        string `json:"userId"`
+	DisplayId string `json:"displayId"`
 	Name      string `json:"name"`
 	Avatar    string `json:"avatar"`
 }
