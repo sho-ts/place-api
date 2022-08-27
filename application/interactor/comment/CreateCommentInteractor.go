@@ -1,24 +1,24 @@
-package interapter
+package interactor
 
 import (
-	"github.com/sho-ts/place-api/domain/dto/input/comment"
+	input "github.com/sho-ts/place-api/domain/dto/input/comment"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/domain/repository"
 )
 
-type CreateCommentInterapter struct {
+type CreateCommentInteractor struct {
 	CommentRepository repository.ICommentRepository
 }
 
-func NewCreateCommentInterapter(
+func NewCreateCommentInteractor(
 	commentRepository repository.ICommentRepository,
-) CreateCommentInterapter {
-	return CreateCommentInterapter{
+) CreateCommentInteractor {
+	return CreateCommentInteractor{
 		CommentRepository: commentRepository,
 	}
 }
 
-func (interapter CreateCommentInterapter) Handle(i input.CreateCommentInput) error {
+func (interactor CreateCommentInteractor) Handle(i input.CreateCommentInput) error {
 	comment := entity.NewComment(
 		i.CommentId,
 		i.PostId,
@@ -26,5 +26,5 @@ func (interapter CreateCommentInterapter) Handle(i input.CreateCommentInput) err
 		entity.User{Id: i.UserId},
 	)
 
-	return interapter.CommentRepository.Store(comment)
+	return interactor.CommentRepository.Store(comment)
 }

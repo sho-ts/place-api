@@ -1,35 +1,35 @@
-package interapter
+package interactor
 
 import (
-	"github.com/sho-ts/place-api/domain/dto/input/user"
+	input "github.com/sho-ts/place-api/domain/dto/input/user"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/domain/repository"
 )
 
-type ChangeProfileInterapter struct {
+type ChangeProfileInteractor struct {
 	UserRepository    repository.IUserRepository
 	StorageRepository repository.IStorageRepository
 }
 
-func NewChangeProfileInterapter(
+func NewChangeProfileInteractor(
 	userRepository repository.IUserRepository,
 	storageRepository repository.IStorageRepository,
-) ChangeProfileInterapter {
-	return ChangeProfileInterapter{
+) ChangeProfileInteractor {
+	return ChangeProfileInteractor{
 		UserRepository:    userRepository,
 		StorageRepository: storageRepository,
 	}
 }
 
-func (interapter ChangeProfileInterapter) Handle(i input.ChangeProfileInput) (entity.User, error) {
+func (interactor ChangeProfileInteractor) Handle(i input.ChangeProfileInput) (entity.User, error) {
 	var path string
 	var err error
 
 	if i.FileName != "" && i.File != nil {
-		path, err = interapter.StorageRepository.UploadToS3Bucket(i.File, i.FileName)
+		path, err = interactor.StorageRepository.UploadToS3Bucket(i.File, i.FileName)
 	}
 
-	prevUser, err := interapter.UserRepository.FindById(i.UserId)
+	prevUser, err := interactor.UserRepository.FindById(i.UserId)
 
 	draftUser := entity.User{
 		Id:        i.UserId,
@@ -50,7 +50,7 @@ func (interapter ChangeProfileInterapter) Handle(i input.ChangeProfileInput) (en
 		draftUser.Avatar = prevUser.Avatar
 	}
 
-	user, err := interapter.UserRepository.ChangeProfile(draftUser)
+	user, err := interactor.UserRepository.ChangeProfile(draftUser)
 
 	return user, err
 }

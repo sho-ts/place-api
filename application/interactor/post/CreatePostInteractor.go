@@ -1,4 +1,4 @@
-package interapter
+package interactor
 
 import (
 	"github.com/sho-ts/place-api/application/util"
@@ -7,23 +7,23 @@ import (
 	"github.com/sho-ts/place-api/domain/repository"
 )
 
-type CreatePostInterapter struct {
+type CreatePostInteractor struct {
 	PostRepository    repository.IPostRepository
 	StorageRepository repository.IStorageRepository
 }
 
-func NewCreatePostInterapter(
+func NewCreatePostInteractor(
 	postRepository repository.IPostRepository,
 	storageRepository repository.IStorageRepository,
-) CreatePostInterapter {
-	return CreatePostInterapter{
+) CreatePostInteractor {
+	return CreatePostInteractor{
 		PostRepository:    postRepository,
 		StorageRepository: storageRepository,
 	}
 }
 
-func (interapter CreatePostInterapter) Handle(i input.CreatePostInput) (error) {
-	path, err := interapter.StorageRepository.UploadToS3Bucket(i.File, i.FileName)
+func (interactor CreatePostInteractor) Handle(i input.CreatePostInput) (error) {
+	path, err := interactor.StorageRepository.UploadToS3Bucket(i.File, i.FileName)
 
 	storageObjects := []entity.StorageObject{
 		entity.NewStorageObject(
@@ -42,7 +42,7 @@ func (interapter CreatePostInterapter) Handle(i input.CreatePostInput) (error) {
 		entity.NewUser(i.UserId, "", ""),
 	)
 
-	_, err = interapter.PostRepository.Store(post)
+	_, err = interactor.PostRepository.Store(post)
 
 	return err
 }
