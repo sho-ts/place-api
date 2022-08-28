@@ -2,8 +2,10 @@ package repository
 
 import (
 	"github.com/sho-ts/place-api/application/util"
+	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/infrastructure/database"
 	"github.com/sho-ts/place-api/infrastructure/database/table"
+	"strings"
 )
 
 type FollowRepository struct{}
@@ -43,4 +45,60 @@ func (repository FollowRepository) CheckDuplicate(followUserId string, followerU
 		Count(&count)
 
 	return count > 0, result.Error
+}
+
+func (repository FollowRepository) GetFollowsByDisplayId(
+	displayId string, limit int, offset int,
+) ([]entity.User, int64, error) {
+	var items []entity.User
+	var count int64
+
+	queryBase := database.DB.
+		Select(strings.Join([]string{
+			"users.id as Id",
+			"users.display_id as DisplayId",
+			"users.name as Name",
+			"users.avatar as Avatar",
+		}, ",")).
+		Table("follows").
+		Joins("join users on users.id = follows.follow_user_id").
+		Where("follows.follower_user_id = (select id from users where display_id = ? limit 1)", displayId)
+
+	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
+
+	if result.Error != nil {
+		return items, count, result.Error
+	}
+
+	result = queryBase.Count(&count)
+
+	return items, count, result.Error
+}
+
+func (repository FollowRepository) GetFollowersByDisplayId(
+	displayId string, limit int, offset int,
+) ([]entity.User, int64, error) {
+	var items []entity.User
+	var count int64
+
+	queryBase := database.DB.
+		Select(strings.Join([]string{
+			"users.id as Id",
+			"users.display_id as DisplayId",
+			"users.name as Name",
+			"users.avatar as Avatar",
+		}, ",")).
+		Table("follows").
+		Joins("join users on users.id = follows.follower_user_id").
+		Where("follows.follow_user_id = (select id from users where display_id = ? limit 1)", displayId)
+
+	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
+
+	if result.Error != nil {
+		return items, count, result.Error
+	}
+
+	result = queryBase.Count(&count)
+
+	return items, count, result.Error
 }

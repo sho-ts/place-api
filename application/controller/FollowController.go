@@ -9,40 +9,88 @@ import (
 )
 
 type FollowController struct {
-	toggleFollowUseCase usecase.IToggleFollowUseCase
+	toggleFollowUseCase            usecase.IToggleFollowUseCase
+	getFollowsByDisplayIdUseCase   usecase.IGetFollowsByDisplayIdUseCase
+	getFollowersByDisplayIdUseCase usecase.IGetFollowersByDisplayIdUseCase
 }
 
 func NewFollowController(
 	toggleFollowUseCase usecase.IToggleFollowUseCase,
+	getFollowsByDisplayIdUseCase usecase.IGetFollowsByDisplayIdUseCase,
+	getFollowersByDisplayIdUseCase usecase.IGetFollowersByDisplayIdUseCase,
 ) FollowController {
 	return FollowController{
-		toggleFollowUseCase: toggleFollowUseCase,
+		toggleFollowUseCase:            toggleFollowUseCase,
+		getFollowsByDisplayIdUseCase:   getFollowsByDisplayIdUseCase,
+		getFollowersByDisplayIdUseCase: getFollowersByDisplayIdUseCase,
 	}
 }
 
 func (controller FollowController) ToggleFollow(c *gin.Context) {
-  var requestBody struct {
-    FollowUserId string `json:"followUserId"`
-  }
+	var requestBody struct {
+		FollowUserId string `json:"followUserId"`
+	}
 	c.ShouldBindJSON(&requestBody)
 
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
-  i := input.NewToggleFollowInput(
-    requestBody.FollowUserId,
-    claims["sub"].(string),
-  )
+	i := input.NewToggleFollowInput(
+		requestBody.FollowUserId,
+		claims["sub"].(string),
+	)
 
-  err := controller.toggleFollowUseCase.Handle(i)
+	err := controller.toggleFollowUseCase.Handle(i)
 
-  if err != nil {
-    c.JSON(500, gin.H{
-      "message": "Error",
-    })
-  }
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "Error",
+		})
+	}
 
-  c.JSON(200, gin.H{
-    "message": "success",
-  })
+	c.JSON(200, gin.H{
+		"message": "success",
+	})
+}
+
+func (controller FollowController) GetFollowsByDisplayId(c *gin.Context) {
+	limit, offset := util.GetLimitAndOffset(c)
+
+	i := input.NewGetFollowsByDisplayIdInput(
+		c.Param("displayId"),
+		limit,
+		offset,
+	)
+
+	o, err := controller.getFollowsByDisplayIdUseCase.Handle(i)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "Error",
+		})
+		return
+	}
+
+	c.JSON(200, o)
+}
+
+func (controller FollowController) GetFollowersByDisplayId(c *gin.Context) {
+	limit, offset := util.GetLimitAndOffset(c)
+
+	i := input.NewGetFollowersByDisplayIdInput(
+		c.Param("displayId"),
+		limit,
+		offset,
+	)
+
+	o, err := controller.getFollowersByDisplayIdUseCase.Handle(i)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": "Error",
+		})
+		return
+	}
+
+	c.JSON(200, o)
 }

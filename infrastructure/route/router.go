@@ -14,6 +14,8 @@ func GetRouter() *gin.Engine {
 
 	public.POST("/users", app.UserController.CreateUser)
 	public.GET("/users/:displayId", app.UserController.GetUser)
+	public.GET("/users/:displayId/follows", app.FollowController.GetFollowsByDisplayId)
+	public.GET("/users/:displayId/followers", app.FollowController.GetFollowersByDisplayId)
 
 	public.GET("/posts", app.PostController.FindAll)
 	public.GET("/posts/:postId", app.PostController.FindById)
