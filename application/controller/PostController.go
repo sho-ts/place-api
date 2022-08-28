@@ -75,7 +75,7 @@ func (controller PostController) FindAll(c *gin.Context) {
 	limit, offset := util.GetLimitAndOffset(c)
 
 	i := input.NewFindAllInput(
-		c.Query("userId"),
+		c.Query("displayId"),
 		limit,
 		offset,
 	)

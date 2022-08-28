@@ -7,6 +7,6 @@ import (
 type IPostRepository interface {
 	Store(entity.Post) (entity.Post, error)
 	FindById(postId string, userId string) (entity.Post, error)
-	FindAll(userId string, limit int, offset int) ([]entity.PostsItem, error)
+	FindAll(displayId string, limit int, offset int) ([]entity.PostsItem, error)
 	GetTotalCount(userId string) (int64, error)
 }

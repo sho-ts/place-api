@@ -19,8 +19,8 @@ func NewFindAllInteractor(
 }
 
 func (interactor FindAllInteractor) Handle(i input.FindAllInput) (output.FindAllOutput, error) {
-	posts, err := interactor.PostRepository.FindAll(i.UserId, i.Limit, i.Offset)
-	count, err := interactor.PostRepository.GetTotalCount(i.UserId)
+	posts, err := interactor.PostRepository.FindAll(i.DisplayId, i.Limit, i.Offset)
+	count, err := interactor.PostRepository.GetTotalCount(i.DisplayId)
 
 	o := output.NewFindAllOutput(
 		posts,

@@ -124,7 +124,7 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 	}, result.Error
 }
 
-func (repository PostRepository) FindAll(userId string, limit int, offset int) ([]entity.PostsItem, error) {
+func (repository PostRepository) FindAll(displayId string, limit int, offset int) ([]entity.PostsItem, error) {
 	var postsResult []struct {
 		PostId    string
 		Caption   string
@@ -156,8 +156,8 @@ func (repository PostRepository) FindAll(userId string, limit int, offset int) (
 		Joins("join storages on storages.id = (" + sub + ")").
 		Joins("join users on users.id = posts.user_id")
 
-	if userId != "" {
-		result = base.Where("posts.user_id = (select id from users where display_id = ?)", userId).
+	if displayId != "" {
+		result = base.Where("posts.user_id = (select id from users where display_id = ?)", displayId).
 			Order("posts.created_at desc").
 			Limit(limit).
 			Offset(offset).

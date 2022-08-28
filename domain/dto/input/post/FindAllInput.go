@@ -1,18 +1,18 @@
 package input
 
 type FindAllInput struct {
-	UserId string
+	DisplayId string
   Limit int
   Offset int
 }
 
 func NewFindAllInput(
-	userId string,
+	displayId string,
   limit int,
   offset int,
 ) FindAllInput {
 	return FindAllInput{
-		UserId: userId,
+		DisplayId: displayId,
     Limit: limit,
     Offset: offset,
 	}
