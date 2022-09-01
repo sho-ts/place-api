@@ -24,10 +24,10 @@ func (repository UserRepository) FindById(userId string) (entity.User, error) {
 	result := database.DB.
 		Table("users").
 		Select(strings.Join([]string{
-			"id as Id",
-			"display_id as DisplayId",
-			"name as Name",
-			"avatar as Avatar",
+			"id AS Id",
+			"display_id AS DisplayId",
+			"name AS Name",
+			"avatar AS Avatar",
 		}, ",")).
 		Where("id = ?", userId).
 		Scan(&user)
@@ -38,24 +38,24 @@ func (repository UserRepository) FindById(userId string) (entity.User, error) {
 func (repository UserRepository) FindByDisplayId(displayId string, userId string) (entity.UserDetail, error) {
 	user := entity.UserDetail{}
 
-  s := strings.Join([]string{
-    "id AS Id",
-    "display_id AS DisplayId",
-    "name AS Name",
-    "avatar AS Avatar",
-  }, ",")
+	s := strings.Join([]string{
+		"id AS Id",
+		"display_id AS DisplayId",
+		"name AS Name",
+		"avatar AS Avatar",
+	}, ",")
 
-  if userId != "" {
-    s = s + ",CASE WHEN follows.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
-  }
+	if userId != "" {
+		s = s + ",CASE WHEN follows.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+	}
 
 	qb := database.DB.
-    Debug().
+		Debug().
 		Table("users").
 		Select(s)
 
 	if userId != "" {
-    // ユーザーIDが渡ってきた場合、フォローしているかどうか調べる
+		// ユーザーIDが渡ってきた場合、フォローしているかどうか調べる
 		j := "LEFT JOIN (SELECT follow_user_id FROM follows WHERE follow_user_id = (SELECT id FROM users WHERE users.display_id = ? LIMIT 1) AND follower_user_id = ?) AS follows ON follows.follow_user_id = users.id"
 		qb = qb.Joins(j, displayId, userId)
 	}

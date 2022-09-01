@@ -3,7 +3,6 @@ package repository
 import (
 	"strings"
 	"time"
-
 	"github.com/sho-ts/place-api/application/util"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/infrastructure/database"
@@ -27,6 +26,10 @@ func (repository PostRepository) Store(post entity.Post) (entity.Post, error) {
 	}
 
 	result := database.DB.Create(&postData)
+
+	if result.Error != nil {
+		return post, result.Error
+	}
 
 	storage := table.Storage{
 		Id:     util.GetULID(),
@@ -60,19 +63,19 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 	}
 
 	s := strings.Join([]string{
-		"posts.id as PostId",
-		"posts.caption as Caption",
-		"posts.user_id as UserId",
-		"posts.created_at as CreatedAt",
-		"users.display_id as DisplayId",
-		"users.avatar as Avatar",
-		"users.name as Name",
+		"posts.id AS PostId",
+		"posts.caption AS Caption",
+		"posts.user_id AS UserId",
+		"posts.created_at AS CreatedAt",
+		"users.display_id AS DisplayId",
+		"users.avatar AS Avatar",
+		"users.name AS Name",
 	}, ",")
 
 	// ------------------------
 	// ユーザーIDを渡している場合、既にいいねしているかどうかも調べる
 	if userId != "" {
-		s = s + ",case when liked.post_id is null then 0 else 1 end as Liked"
+		s = s + ",CASE WHEN liked.post_id IS NULL THEN 0 ELSE 1 END AS Liked"
 	}
 
 	// サブクエリ
@@ -84,7 +87,7 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 
 	var sj string
 	if userId != "" {
-		sj = "left join (?) as liked on liked.post_id = posts.id"
+		sj = "LEFT JOIN (?) AS liked ON liked.post_id = posts.id"
 	}
 	// ------------------------
 
@@ -92,19 +95,23 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 		Table("posts").
 		Select(s).
 		Joins(sj, sub).
-		Joins("join users on users.id = posts.user_id").
+		Joins("JOIN users ON users.id = posts.user_id").
 		Where("posts.id = ?", postId).
 		Scan(&postResult)
+
+	if result.Error != nil {
+		return entity.Post{}, result.Error
+	}
 
 	var storageObjects []entity.StorageObject
 
 	result = database.DB.
 		Table("storages").
 		Select([]string{
-			"id as Id",
-			"post_id as PostId",
-			"user_id as UserId",
-			"url as Url",
+			"id AS Id",
+			"post_id AS PostId",
+			"user_id AS UserId",
+			"url AS Url",
 		}).
 		Where("post_id = ?", postId).
 		Find(&storageObjects)
@@ -137,34 +144,34 @@ func (repository PostRepository) FindAll(displayId string, limit int, offset int
 	}
 
 	// 投稿に複数の画像があった場合の重複除外
-	sub := "select id from storages s where s.post_id = posts.id limit 1"
+	sub := "SELECT id FROM storages WHERE post_id = posts.id LIMIT 1"
 
 	var result *gorm.DB
 
 	base := database.DB.
 		Table("posts").
 		Select(strings.Join([]string{
-			"posts.id as PostId",
-			"posts.user_id as UserId",
-			"posts.caption as Caption",
-			"posts.created_at as CreatedAt",
-			"storages.url as Thumbnail",
-			"users.display_id as DisplayId",
-			"users.avatar as Avatar",
-			"users.name as Name",
+			"posts.id AS PostId",
+			"posts.user_id AS UserId",
+			"posts.caption AS Caption",
+			"posts.created_at AS CreatedAt",
+			"storages.url AS Thumbnail",
+			"users.display_id AS DisplayId",
+			"users.avatar AS Avatar",
+			"users.name AS Name",
 		}, ",")).
-		Joins("join storages on storages.id = (" + sub + ")").
-		Joins("join users on users.id = posts.user_id")
+		Joins("JOIN storages ON storages.id = (" + sub + ")").
+		Joins("JOIN users ON users.id = posts.user_id")
 
 	if displayId != "" {
-		result = base.Where("posts.user_id = (select id from users where display_id = ?)", displayId).
-			Order("posts.created_at desc").
+		result = base.Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", displayId).
+			Order("posts.created_at DESC").
 			Limit(limit).
 			Offset(offset).
 			Scan(&postsResult)
 	} else {
 		result = base.
-			Order("posts.created_at desc").
+			Order("posts.created_at DESC").
 			Limit(limit).
 			Offset(offset).
 			Scan(&postsResult)
@@ -196,7 +203,7 @@ func (repository PostRepository) GetTotalCount(userId string) (int64, error) {
 	if userId != "" {
 		result = database.DB.
 			Table("posts").
-			Where("posts.user_id = (select id from users where display_id = ?)", userId).
+			Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", userId).
 			Count(&count)
 	} else {
 		result = database.DB.

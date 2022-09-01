@@ -44,18 +44,18 @@ func (repository CommentRepository) FindAll(postId string, limit int, offset int
 	result := database.DB.
 		Table("comments").
 		Select(strings.Join([]string{
-			"comments.id as CommentId",
-			"comments.content as Content",
-			"comments.post_id as PostId",
-			"comments.created_at as CreatedAt",
-			"users.id as UserId",
-			"users.display_id as DisplayId",
-			"users.avatar as Avatar",
-			"users.name as UserName",
+			"comments.id AS CommentId",
+			"comments.content AS Content",
+			"comments.post_id AS PostId",
+			"comments.created_at AS CreatedAt",
+			"users.id AS UserId",
+			"users.display_id AS DisplayId",
+			"users.avatar AS Avatar",
+			"users.name AS UserName",
 		}, ",")).
-		Joins("join users on users.id = comments.user_id").
+		Joins("JOIN users ON users.id = comments.user_id").
 		Where("comments.post_id = ?", postId).
-		Order("comments.created_at desc").
+		Order("comments.created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Scan(&commentsResult)

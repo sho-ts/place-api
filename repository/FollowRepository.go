@@ -55,14 +55,14 @@ func (repository FollowRepository) GetFollowsByDisplayId(
 
 	queryBase := database.DB.
 		Select(strings.Join([]string{
-			"users.id as Id",
-			"users.display_id as DisplayId",
-			"users.name as Name",
-			"users.avatar as Avatar",
+			"users.id AS Id",
+			"users.display_id AS DisplayId",
+			"users.name AS Name",
+			"users.avatar AS Avatar",
 		}, ",")).
 		Table("follows").
-		Joins("join users on users.id = follows.follow_user_id").
-		Where("follows.follower_user_id = (select id from users where display_id = ? limit 1)", displayId)
+		Joins("JOIN users ON users.id = follows.follow_user_id").
+		Where("follows.follower_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
 
 	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
 
@@ -83,10 +83,10 @@ func (repository FollowRepository) GetFollowersByDisplayId(
 
 	queryBase := database.DB.
 		Select(strings.Join([]string{
-			"users.id as Id",
-			"users.display_id as DisplayId",
-			"users.name as Name",
-			"users.avatar as Avatar",
+			"users.id AS Id",
+			"users.display_id AS DisplayId",
+			"users.name AS Name",
+			"users.avatar AS Avatar",
 		}, ",")).
 		Table("follows").
 		Joins("join users on users.id = follows.follower_user_id").
