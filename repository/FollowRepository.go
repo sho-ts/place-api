@@ -89,8 +89,8 @@ func (repository FollowRepository) GetFollowersByDisplayId(
 			"users.avatar AS Avatar",
 		}, ",")).
 		Table("follows").
-		Joins("join users on users.id = follows.follower_user_id").
-		Where("follows.follow_user_id = (select id from users where display_id = ? limit 1)", displayId)
+		Joins("JOIN users ON users.id = follows.follower_user_id").
+		Where("follows.follow_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
 
 	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
 

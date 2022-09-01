@@ -46,17 +46,28 @@ func (repository UserRepository) FindByDisplayId(displayId string, userId string
 	}, ",")
 
 	if userId != "" {
-		s = s + ",CASE WHEN follows.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+		s = s + "," + strings.Join([]string{
+			"CASE",
+			"WHEN follows.follow_user_id IS NULL THEN 0",
+			"ELSE 1",
+			"END",
+			"AS FollowStatus",
+		}, " ")
 	}
 
 	qb := database.DB.
-		Debug().
 		Table("users").
 		Select(s)
 
 	if userId != "" {
 		// ユーザーIDが渡ってきた場合、フォローしているかどうか調べる
-		j := "LEFT JOIN (SELECT follow_user_id FROM follows WHERE follow_user_id = (SELECT id FROM users WHERE users.display_id = ? LIMIT 1) AND follower_user_id = ?) AS follows ON follows.follow_user_id = users.id"
+		sub := strings.Join([]string{
+			"SELECT follow_user_id",
+			"FROM follows",
+			"WHERE follow_user_id = (SELECT id FROM users WHERE users.display_id = ? LIMIT 1)",
+			"AND follower_user_id = ?",
+		}, " ")
+		j := "LEFT JOIN (" + sub + ") AS follows ON follows.follow_user_id = users.id"
 		qb = qb.Joins(j, displayId, userId)
 	}
 
