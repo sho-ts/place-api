@@ -37,7 +37,7 @@ func (controller UserController) CreateUser(c *gin.Context) {
 	}
 	c.ShouldBindJSON(&requestBody)
 
-	FindByDisplayIdInput := input.NewFindByDisplayIdInput(requestBody.DisplayId)
+	FindByDisplayIdInput := input.NewFindByDisplayIdInput(requestBody.DisplayId, "")
 
 	duplicate, _ := controller.findByDisplayIdUseCase.Handle(FindByDisplayIdInput)
 
@@ -85,7 +85,7 @@ func (controller UserController) GetMe(c *gin.Context) {
 }
 
 func (controller UserController) GetUser(c *gin.Context) {
-	i := input.NewFindByDisplayIdInput(c.Param("displayId"))
+	i := input.NewFindByDisplayIdInput(c.Param("displayId"), c.Query("userId"))
 
 	user, err := controller.findByDisplayIdUseCase.Handle(i)
 

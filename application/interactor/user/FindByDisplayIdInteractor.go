@@ -18,8 +18,8 @@ func NewFindByDisplayIdInteractor(
 	}
 }
 
-func (interactor FindByDisplayIdInteractor) Handle(i input.FindByDisplayIdInput) (entity.User, error) {
-	user, err := interactor.UserRepository.FindByDisplayId(i.DisplayId)
+func (interactor FindByDisplayIdInteractor) Handle(i input.FindByDisplayIdInput) (entity.UserDetail, error) {
+	user, err := interactor.UserRepository.FindByDisplayId(i.DisplayId, i.UserId)
 
 	return user, err
 }

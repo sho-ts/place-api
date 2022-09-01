@@ -35,17 +35,32 @@ func (repository UserRepository) FindById(userId string) (entity.User, error) {
 	return user, result.Error
 }
 
-func (repository UserRepository) FindByDisplayId(displayId string) (entity.User, error) {
-	user := entity.User{}
+func (repository UserRepository) FindByDisplayId(displayId string, userId string) (entity.UserDetail, error) {
+	user := entity.UserDetail{}
 
-	result := database.DB.
+  s := strings.Join([]string{
+    "id AS Id",
+    "display_id AS DisplayId",
+    "name AS Name",
+    "avatar AS Avatar",
+  }, ",")
+
+  if userId != "" {
+    s = s + ",CASE WHEN follows.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+  }
+
+	qb := database.DB.
+    Debug().
 		Table("users").
-		Select(strings.Join([]string{
-			"id as Id",
-			"display_id as DisplayId",
-			"name as Name",
-			"avatar as Avatar",
-		}, ",")).
+		Select(s)
+
+	if userId != "" {
+    // ユーザーIDが渡ってきた場合、フォローしているかどうか調べる
+		j := "LEFT JOIN (SELECT follow_user_id FROM follows WHERE follow_user_id = (SELECT id FROM users WHERE users.display_id = ? LIMIT 1) AND follower_user_id = ?) AS follows ON follows.follow_user_id = users.id"
+		qb = qb.Joins(j, displayId, userId)
+	}
+
+	result := qb.
 		Where("display_id = ?", displayId).
 		Scan(&user)
 
@@ -54,6 +69,6 @@ func (repository UserRepository) FindByDisplayId(displayId string) (entity.User,
 
 func (repository UserRepository) ChangeProfile(user entity.User) (entity.User, error) {
 	result := database.DB.Save(user)
-  
+
 	return user, result.Error
 }

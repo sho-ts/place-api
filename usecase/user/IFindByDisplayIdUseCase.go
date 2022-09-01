@@ -6,5 +6,5 @@ import (
 )
 
 type IFindByDisplayIdUseCase interface {
-	Handle(i input.FindByDisplayIdInput) (entity.User, error)
+	Handle(i input.FindByDisplayIdInput) (entity.UserDetail, error)
 }
