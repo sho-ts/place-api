@@ -1,13 +1,12 @@
 package repository
 
 import (
-	"strings"
-	"time"
 	"github.com/sho-ts/place-api/application/util"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/infrastructure/database"
 	"github.com/sho-ts/place-api/infrastructure/database/table"
-	"gorm.io/gorm"
+	"strings"
+	"time"
 )
 
 type PostRepository struct{}
@@ -131,7 +130,7 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 	}, result.Error
 }
 
-func (repository PostRepository) FindAll(displayId string, limit int, offset int) ([]entity.PostsItem, error) {
+func (repository PostRepository) FindAll(displayId string, search string, limit int, offset int) ([]entity.PostsItem, error) {
 	var postsResult []struct {
 		PostId    string
 		Caption   string
@@ -146,9 +145,7 @@ func (repository PostRepository) FindAll(displayId string, limit int, offset int
 	// 投稿に複数の画像があった場合の重複除外
 	sub := "SELECT id FROM storages WHERE post_id = posts.id LIMIT 1"
 
-	var result *gorm.DB
-
-	base := database.DB.
+	result := database.DB.
 		Table("posts").
 		Select(strings.Join([]string{
 			"posts.id AS PostId",
@@ -164,18 +161,18 @@ func (repository PostRepository) FindAll(displayId string, limit int, offset int
 		Joins("JOIN users ON users.id = posts.user_id")
 
 	if displayId != "" {
-		result = base.Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", displayId).
-			Order("posts.created_at DESC").
-			Limit(limit).
-			Offset(offset).
-			Scan(&postsResult)
-	} else {
-		result = base.
-			Order("posts.created_at DESC").
-			Limit(limit).
-			Offset(offset).
-			Scan(&postsResult)
+		result = result.Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", displayId)
 	}
+
+	if search != "" {
+		result = result.Where("posts.caption LIKE ?", "%"+search+"%")
+	}
+
+	result = result.
+		Order("posts.created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Scan(&postsResult)
 
 	items := make([]entity.PostsItem, len(postsResult))
 	for index := range postsResult {
@@ -196,20 +193,20 @@ func (repository PostRepository) FindAll(displayId string, limit int, offset int
 	return items, result.Error
 }
 
-func (repository PostRepository) GetTotalCount(userId string) (int64, error) {
+func (repository PostRepository) GetTotalCount(displayId string, search string) (int64, error) {
 	var count int64
-	var result *gorm.DB
+	result := database.DB.Table("posts")
 
-	if userId != "" {
-		result = database.DB.
-			Table("posts").
-			Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", userId).
-			Count(&count)
-	} else {
-		result = database.DB.
-			Table("posts").
-			Count(&count)
+	if displayId != "" {
+		result = result.
+			Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", displayId)
 	}
+
+  if search != "" {
+		result = result.Where("posts.caption LIKE ?", "%"+search+"%")
+  }
+
+	result = result.Count(&count)
 
 	return count, result.Error
 }
