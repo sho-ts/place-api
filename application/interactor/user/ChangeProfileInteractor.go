@@ -38,13 +38,13 @@ func (interactor ChangeProfileInteractor) Handle(i input.ChangeProfileInput) (en
 		Avatar:    path,
 	}
 
-  if i.DisplayId == "" {
-    draftUser.DisplayId = prevUser.DisplayId
-  }
+	if i.DisplayId == "" {
+		draftUser.DisplayId = prevUser.DisplayId
+	}
 
-  if i.Name == "" {
-    draftUser.Name = prevUser.Name
-  }
+	if i.Name == "" {
+		draftUser.Name = prevUser.Name
+	}
 
 	if path == "" {
 		draftUser.Avatar = prevUser.Avatar

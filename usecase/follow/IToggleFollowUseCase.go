@@ -5,5 +5,5 @@ import (
 )
 
 type IToggleFollowUseCase interface {
-  Handle(i input.ToggleFollowInput) error
+	Handle(i input.ToggleFollowInput) error
 }

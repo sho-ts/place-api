@@ -22,7 +22,7 @@ func NewCreatePostInteractor(
 	}
 }
 
-func (interactor CreatePostInteractor) Handle(i input.CreatePostInput) (error) {
+func (interactor CreatePostInteractor) Handle(i input.CreatePostInput) error {
 	path, err := interactor.StorageRepository.UploadToS3Bucket(i.File, i.FileName)
 
 	storageObjects := []entity.StorageObject{

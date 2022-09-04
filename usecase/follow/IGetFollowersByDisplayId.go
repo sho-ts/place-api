@@ -6,5 +6,5 @@ import (
 )
 
 type IGetFollowersByDisplayIdUseCase interface {
-  Handle(i input.GetFollowersByDisplayIdInput) (output.GetFollowersByDisplayIdOutput, error)
+	Handle(i input.GetFollowersByDisplayIdInput) (output.GetFollowersByDisplayIdOutput, error)
 }

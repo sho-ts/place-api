@@ -5,11 +5,11 @@ import (
 )
 
 type PostsItem struct {
-	PostId    string      `json:"postId"`
-	Caption   string      `json:"caption"`
-	CreatedAt time.Time   `json:"createdAt"`
-	Thumbnail string      `json:"thumbnail"`
-	User      User `json:"user"`
+	PostId    string    `json:"postId"`
+	Caption   string    `json:"caption"`
+	CreatedAt time.Time `json:"createdAt"`
+	Thumbnail string    `json:"thumbnail"`
+	User      User      `json:"user"`
 }
 
 func NewPostsItem(

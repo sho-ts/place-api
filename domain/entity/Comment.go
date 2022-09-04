@@ -5,11 +5,11 @@ import (
 )
 
 type Comment struct {
-	CommentId string      `json:"commentId"`
-	PostId    string      `json:"postId"`
-	Content   string      `json:"content"`
-	CreatedAt time.Time   `json:"createdAt"`
-	User      User `json:"user"`
+	CommentId string    `json:"commentId"`
+	PostId    string    `json:"postId"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"createdAt"`
+	User      User      `json:"user"`
 }
 
 func NewComment(

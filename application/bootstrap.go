@@ -39,6 +39,6 @@ var LikeController = controller.NewLikeController(
 )
 var FollowController = controller.NewFollowController(
 	ifo.NewToggleFollowInteractor(followRepository),
-  ifo.NewGetFollowsByDisplayIdInteractor(followRepository),
-  ifo.NewGetFollowersByDisplayIdInteractor(followRepository),
+	ifo.NewGetFollowsByDisplayIdInteractor(followRepository),
+	ifo.NewGetFollowersByDisplayIdInteractor(followRepository),
 )

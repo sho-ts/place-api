@@ -53,16 +53,16 @@ func (repository FollowRepository) GetFollowsByDisplayId(
 	var items []entity.Follow
 	var count int64
 
-  s := strings.Join([]string{
-    "users.id AS Id",
-    "users.display_id AS DisplayId",
-    "users.name AS Name",
-    "users.avatar AS Avatar",
-  }, ",")
+	s := strings.Join([]string{
+		"users.id AS Id",
+		"users.display_id AS DisplayId",
+		"users.name AS Name",
+		"users.avatar AS Avatar",
+	}, ",")
 
-  if userId != "" {
-    s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
-  }
+	if userId != "" {
+		s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+	}
 
 	queryBase := database.DB.
 		Select(s).
@@ -103,16 +103,16 @@ func (repository FollowRepository) GetFollowersByDisplayId(
 	var items []entity.Follow
 	var count int64
 
-  s := strings.Join([]string{
-    "users.id AS Id",
-    "users.display_id AS DisplayId",
-    "users.name AS Name",
-    "users.avatar AS Avatar",
-  }, ",")
+	s := strings.Join([]string{
+		"users.id AS Id",
+		"users.display_id AS DisplayId",
+		"users.name AS Name",
+		"users.avatar AS Avatar",
+	}, ",")
 
-  if userId != "" {
-    s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
-  }
+	if userId != "" {
+		s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+	}
 
 	queryBase := database.DB.
 		Select(s).

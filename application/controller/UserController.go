@@ -100,15 +100,15 @@ func (controller UserController) GetUser(c *gin.Context) {
 }
 
 func (controller UserController) ChangeProfile(c *gin.Context) {
-  var fileName string
+	var fileName string
 	token := util.GetAuthResult(c)
 	claims := token.Claims.(jwtgo.MapClaims)
 
 	file, header, _ := c.Request.FormFile("attachmentFile")
 
-  if header != nil {
-    fileName = header.Filename
-  }
+	if header != nil {
+		fileName = header.Filename
+	}
 
 	i := input.NewChangeProfileInput(
 		claims["sub"].(string),

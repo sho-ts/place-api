@@ -202,9 +202,9 @@ func (repository PostRepository) GetTotalCount(displayId string, search string) 
 			Where("posts.user_id = (SELECT id FROM users WHERE display_id = ?)", displayId)
 	}
 
-  if search != "" {
+	if search != "" {
 		result = result.Where("posts.caption LIKE ?", "%"+search+"%")
-  }
+	}
 
 	result = result.Count(&count)
 

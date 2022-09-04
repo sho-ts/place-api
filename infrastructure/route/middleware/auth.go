@@ -12,5 +12,5 @@ func GetAuthMiddleware() *cognito.AuthMiddleware {
 		panic("router Error")
 	}
 
-  return mw
+	return mw
 }

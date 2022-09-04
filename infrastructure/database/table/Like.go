@@ -5,7 +5,7 @@ import (
 )
 
 type Like struct {
-  Id        string    `gorm:"size:255;primary_key"`
+	Id        string `gorm:"size:255;primary_key"`
 	UserId    string
 	PostId    string
 	CreatedAt time.Time `json:"-"`

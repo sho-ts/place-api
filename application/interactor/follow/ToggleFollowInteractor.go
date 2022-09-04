@@ -20,15 +20,15 @@ func NewToggleFollowInteractor(
 func (interactor ToggleFollowInteractor) Handle(i input.ToggleFollowInput) error {
 	duplicate, err := interactor.followRepository.CheckDuplicate(i.FollowUserId, i.FollowerUserId)
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  if !duplicate {
-    err = interactor.followRepository.Store(i.FollowUserId,i.FollowerUserId)
-  } else {
-    err = interactor.followRepository.Remove(i.FollowUserId,i.FollowerUserId)
-  }
+	if !duplicate {
+		err = interactor.followRepository.Store(i.FollowUserId, i.FollowerUserId)
+	} else {
+		err = interactor.followRepository.Remove(i.FollowUserId, i.FollowerUserId)
+	}
 
-  return err
+	return err
 }

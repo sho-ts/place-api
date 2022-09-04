@@ -11,7 +11,7 @@ import (
 type PostController struct {
 	CreatePostUseCase usecase.ICreatePostUseCase
 	FindByIdUseCase   usecase.IFindByIdUseCase
-	FindAllUseCase   usecase.IFindAllUseCase
+	FindAllUseCase    usecase.IFindAllUseCase
 }
 
 func NewPostController(
@@ -22,7 +22,7 @@ func NewPostController(
 	return PostController{
 		CreatePostUseCase: createPostUseCase,
 		FindByIdUseCase:   findByIdUseCase,
-		FindAllUseCase:   findAllUseCase,
+		FindAllUseCase:    findAllUseCase,
 	}
 }
 
@@ -76,7 +76,7 @@ func (controller PostController) FindAll(c *gin.Context) {
 
 	i := input.NewFindAllInput(
 		c.Query("displayId"),
-    c.Query("s"),
+		c.Query("s"),
 		limit,
 		offset,
 	)

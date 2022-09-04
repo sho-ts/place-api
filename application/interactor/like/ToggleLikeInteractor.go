@@ -20,9 +20,9 @@ func NewToggleLikeInteractor(
 func (interactor ToggleLikeInteractor) Handle(i input.ToggleLikeInput) error {
 	duplicate, err := interactor.LikeRepository.CheckDuplicate(i.PostId, i.UserId)
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
 	if duplicate {
 		err = interactor.LikeRepository.Remove(i.PostId, i.UserId)
