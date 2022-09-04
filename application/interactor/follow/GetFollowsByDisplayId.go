@@ -19,6 +19,6 @@ func NewGetFollowsByDisplayIdInteractor(
 }
 
 func (interactor GetFollowsByDisplayIdInteractor) Handle(i input.GetFollowsByDisplayIdInput) (output.GetFollowsByDisplayIdOutput, error) {
-	items, total, err := interactor.followRepository.GetFollowsByDisplayId(i.DisplayId, i.Limit, i.Offset)
+	items, total, err := interactor.followRepository.GetFollowsByDisplayId(i.DisplayId, i.UserId, i.Limit, i.Offset)
 	return output.NewGetFollowsByDisplayIdOutput(items, total), err
 }

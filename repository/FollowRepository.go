@@ -48,21 +48,43 @@ func (repository FollowRepository) CheckDuplicate(followUserId string, followerU
 }
 
 func (repository FollowRepository) GetFollowsByDisplayId(
-	displayId string, limit int, offset int,
-) ([]entity.User, int64, error) {
-	var items []entity.User
+	displayId string, userId string, limit int, offset int,
+) ([]entity.Follow, int64, error) {
+	var items []entity.Follow
 	var count int64
 
+  s := strings.Join([]string{
+    "users.id AS Id",
+    "users.display_id AS DisplayId",
+    "users.name AS Name",
+    "users.avatar AS Avatar",
+  }, ",")
+
+  if userId != "" {
+    s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+  }
+
 	queryBase := database.DB.
-		Select(strings.Join([]string{
-			"users.id AS Id",
-			"users.display_id AS DisplayId",
-			"users.name AS Name",
-			"users.avatar AS Avatar",
-		}, ",")).
-		Table("follows").
-		Joins("JOIN users ON users.id = follows.follow_user_id").
-		Where("follows.follower_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
+		Select(s).
+		Table("follows")
+
+	if userId != "" {
+		queryBase = queryBase.Joins(strings.Join([]string{
+			"JOIN (",
+			"  SELECT",
+			"    users.*,",
+			"    follows.follow_user_id",
+			"  FROM users",
+			"    LEFT JOIN (",
+			"      SELECT * FROM follows WHERE follower_user_id = ?",
+			"    ) AS follows ON follows.follow_user_id = users.id",
+			") AS users ON users.id = follower_user_id",
+		}, ""), userId)
+	} else {
+		queryBase = queryBase.Joins("JOIN users ON users.id = follows.follow_user_id")
+	}
+
+	queryBase = queryBase.Where("follows.follower_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
 
 	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
 
@@ -76,21 +98,43 @@ func (repository FollowRepository) GetFollowsByDisplayId(
 }
 
 func (repository FollowRepository) GetFollowersByDisplayId(
-	displayId string, limit int, offset int,
-) ([]entity.User, int64, error) {
-	var items []entity.User
+	displayId string, userId string, limit int, offset int,
+) ([]entity.Follow, int64, error) {
+	var items []entity.Follow
 	var count int64
 
+  s := strings.Join([]string{
+    "users.id AS Id",
+    "users.display_id AS DisplayId",
+    "users.name AS Name",
+    "users.avatar AS Avatar",
+  }, ",")
+
+  if userId != "" {
+    s = s + ", CASE WHEN users.follow_user_id IS NULL THEN 0 ELSE 1 END AS FollowStatus"
+  }
+
 	queryBase := database.DB.
-		Select(strings.Join([]string{
-			"users.id AS Id",
-			"users.display_id AS DisplayId",
-			"users.name AS Name",
-			"users.avatar AS Avatar",
-		}, ",")).
-		Table("follows").
-		Joins("JOIN users ON users.id = follows.follower_user_id").
-		Where("follows.follow_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
+		Select(s).
+		Table("follows")
+
+	if userId != "" {
+		queryBase = queryBase.Joins(strings.Join([]string{
+			"JOIN (",
+			"  SELECT",
+			"    users.*,",
+			"    follows.follow_user_id",
+			"  FROM users",
+			"    LEFT JOIN (",
+			"      SELECT * FROM follows WHERE follower_user_id = ?",
+			"    ) AS follows ON follows.follow_user_id = users.id",
+			") AS users ON users.id = follower_user_id",
+		}, ""), userId)
+	} else {
+		queryBase = queryBase.Joins("JOIN users ON users.id = follows.follower_user_id")
+	}
+
+	queryBase.Where("follows.follow_user_id = (SELECT id FROM users WHERE display_id = ? LIMIT 1)", displayId)
 
 	result := queryBase.Limit(limit).Offset(offset).Scan(&items)
 

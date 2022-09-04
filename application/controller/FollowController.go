@@ -58,6 +58,7 @@ func (controller FollowController) GetFollowsByDisplayId(c *gin.Context) {
 
 	i := input.NewGetFollowsByDisplayIdInput(
 		c.Param("displayId"),
+		c.Query("userId"),
 		limit,
 		offset,
 	)
@@ -79,6 +80,7 @@ func (controller FollowController) GetFollowersByDisplayId(c *gin.Context) {
 
 	i := input.NewGetFollowersByDisplayIdInput(
 		c.Param("displayId"),
+		c.Query("userId"),
 		limit,
 		offset,
 	)

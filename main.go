@@ -18,7 +18,7 @@ func loadEnv() {
 func main() {
 	loadEnv()
 	database.Connect()
-  database.Migrate()
+	database.Migrate()
 	router := route.GetRouter()
 	router.Run()
 }

@@ -5,12 +5,12 @@ import (
 )
 
 type GetFollowsByDisplayIdOutput struct {
-	Items []entity.User `json:"items"`
-	Total int64         `json:"total"`
+	Items []entity.Follow `json:"items"`
+	Total int64           `json:"total"`
 }
 
 func NewGetFollowsByDisplayIdOutput(
-	items []entity.User,
+	items []entity.Follow,
 	total int64,
 ) GetFollowsByDisplayIdOutput {
 	return GetFollowsByDisplayIdOutput{

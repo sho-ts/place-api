@@ -8,6 +8,6 @@ type IFollowRepository interface {
 	Store(followUserId string, followerUserId string) error
 	Remove(followUserId string, followerUserId string) error
 	CheckDuplicate(postId string, userId string) (bool, error)
-	GetFollowsByDisplayId(displayId string, limit int, offset int) ([]entity.User, int64, error)
-	GetFollowersByDisplayId(displayId string, limit int, offset int) ([]entity.User, int64, error)
+	GetFollowsByDisplayId(displayId string, userId string, limit int, offset int) ([]entity.Follow, int64, error)
+	GetFollowersByDisplayId(displayId string, userId string, limit int, offset int) ([]entity.Follow, int64, error)
 }
