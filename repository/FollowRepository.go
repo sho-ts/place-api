@@ -75,10 +75,10 @@ func (repository FollowRepository) GetFollowsByDisplayId(
 			"    users.*,",
 			"    follows.follow_user_id",
 			"  FROM users",
-			"    LEFT JOIN (",
-			"      SELECT * FROM follows WHERE follower_user_id = ?",
-			"    ) AS follows ON follows.follow_user_id = users.id",
-			") AS users ON users.id = follower_user_id",
+			"  LEFT JOIN (",
+			"    SELECT * FROM follows WHERE follower_user_id = ?",
+			"  ) AS follows ON follows.follow_user_id = users.id",
+			") AS users ON users.id = follows.follow_user_id",
 		}, ""), userId)
 	} else {
 		queryBase = queryBase.Joins("JOIN users ON users.id = follows.follow_user_id")
@@ -125,9 +125,9 @@ func (repository FollowRepository) GetFollowersByDisplayId(
 			"    users.*,",
 			"    follows.follow_user_id",
 			"  FROM users",
-			"    LEFT JOIN (",
-			"      SELECT * FROM follows WHERE follower_user_id = ?",
-			"    ) AS follows ON follows.follow_user_id = users.id",
+			"  LEFT JOIN (",
+			"    SELECT * FROM follows WHERE follower_user_id = ?",
+			"  ) AS follows ON follows.follow_user_id = users.id",
 			") AS users ON users.id = follower_user_id",
 		}, ""), userId)
 	} else {
