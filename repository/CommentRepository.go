@@ -30,7 +30,7 @@ func (repository CommentRepository) Store(comment entity.Comment) error {
 func (repository CommentRepository) FindAll(postId string, limit int, offset int) (
 	[]entity.Comment, error,
 ) {
-	var commentsResult []struct {
+	commentsResult := []struct {
 		CommentId string
 		Content   string
 		PostId    string
@@ -39,7 +39,7 @@ func (repository CommentRepository) FindAll(postId string, limit int, offset int
 		DisplayId string
 		Avatar    string
 		UserName  string
-	}
+	}{}
 
 	result := database.DB.
 		Table("comments").

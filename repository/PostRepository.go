@@ -131,7 +131,7 @@ func (repository PostRepository) FindById(postId string, userId string) (entity.
 }
 
 func (repository PostRepository) FindAll(displayId string, search string, limit int, offset int) ([]entity.PostsItem, error) {
-	var postsResult []struct {
+	postsResult := []struct {
 		PostId    string
 		Caption   string
 		CreatedAt time.Time
@@ -140,7 +140,7 @@ func (repository PostRepository) FindAll(displayId string, search string, limit 
 		DisplayId string
 		Avatar    string
 		Name      string
-	}
+	}{}
 
 	// 投稿に複数の画像があった場合の重複除外
 	sub := "SELECT id FROM storages WHERE post_id = posts.id LIMIT 1"

@@ -1,11 +1,12 @@
 package repository
 
 import (
+	"strings"
+
 	"github.com/sho-ts/place-api/application/util"
 	"github.com/sho-ts/place-api/domain/entity"
 	"github.com/sho-ts/place-api/infrastructure/database"
 	"github.com/sho-ts/place-api/infrastructure/database/table"
-	"strings"
 )
 
 type FollowRepository struct{}
@@ -50,7 +51,7 @@ func (repository FollowRepository) CheckDuplicate(followUserId string, followerU
 func (repository FollowRepository) GetFollowsByDisplayId(
 	displayId string, userId string, limit int, offset int,
 ) ([]entity.Follow, int64, error) {
-	var items []entity.Follow
+	items := []entity.Follow{}
 	var count int64
 
 	s := strings.Join([]string{
@@ -100,7 +101,7 @@ func (repository FollowRepository) GetFollowsByDisplayId(
 func (repository FollowRepository) GetFollowersByDisplayId(
 	displayId string, userId string, limit int, offset int,
 ) ([]entity.Follow, int64, error) {
-	var items []entity.Follow
+	items := []entity.Follow{}
 	var count int64
 
 	s := strings.Join([]string{
